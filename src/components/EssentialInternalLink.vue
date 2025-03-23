@@ -1,9 +1,10 @@
 <template>
   <q-item
+    clickable
     :to="props.link"
   >
     <q-item-section
-      v-if="props.icon"
+      v-if=" props.icon "
       avatar
     >
       <q-icon :name="props.icon" />
@@ -17,7 +18,7 @@
 </template>
 
 <script setup>
-const props = defineProps({
+const props = defineProps( {
   title: {
     type: String,
     required: true
@@ -37,5 +38,5 @@ const props = defineProps({
     type: String,
     default: ''
   }
-})
+} )
 </script>
