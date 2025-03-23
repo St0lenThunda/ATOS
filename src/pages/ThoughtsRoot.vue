@@ -95,16 +95,16 @@ const searchJSONforValueReturningNode = ( obj, value ) => {
   }
   return null;
 }
-const traverse = (node, path) { 
-    for (let key in node) { 
-        let newPath = path.concat(key); 
-        if (Object.keys(node[key]).length === 0) { 
-            crumbs.value.push(newPath); 
-        } else { 
-            traverse(node[key], newPath); 
-        } 
-    } 
-} 
+const traverse = (node, path) => {
+    for (let key in node) {
+        let newPath = path.concat(key);
+        if (Object.keys(node[key]).length === 0) {
+            crumbs.value.push(newPath);
+        } else {
+            traverse(node[key], newPath);
+        }
+    }
+}
 
 </script>
 <style scoped>
