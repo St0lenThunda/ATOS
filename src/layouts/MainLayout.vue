@@ -12,7 +12,7 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          ATOS - a thought organization system
         </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>

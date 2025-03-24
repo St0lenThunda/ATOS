@@ -19,16 +19,22 @@
       bordered
     >
       <q-card-section>
-        <q-breadcrumbs>
-          <q-breadcrumbs-el label="Home" />
-          <q-breadcrumbs-el label="Components" />
-          <q-breadcrumbs-el label="Breadcrumbs" />
-        </q-breadcrumbs>
+        <q-banner rounded>
+          <div id="breadcrumbs">
+            TEST
+          </div>
+        </q-banner>
       </q-card-section>
+      <q-card-section>
+        <strong>Selected Node (details below):</strong><q-space />
+        <q-icon
+          right
+          size="2em"
+          :name="currentNodeIsFolder ? 'folder' : 'energy_savings_leaf'"
+        ></q-icon>
 
+      </q-card-section>
       <q-card-actions>
-
-
         <q-space />
 
         <q-btn
@@ -44,16 +50,8 @@
       <q-slide-transition>
         <div v-show="expanded">
           <q-separator />
-          <q-card-section>
-            <div>
-              <strong>Selected Node :</strong>
-              <q-icon
-                name="folder"
-                v-if=" currentNodeIsFolder "
-              ></q-icon>
-              <pre id="json-display"></pre>
-            </div>
-          </q-card-section>
+          <pre id="json-display"></pre>
+
         </div>
       </q-slide-transition>
     </q-card>
@@ -76,11 +74,24 @@ const currentNodeIsFolder = computed( () => {
 } )
 const onNodeSelect = ( selected ) => {
   selectedNode.value = searchJSONforValueReturningNode( data[0], selected );
-  traverse(selectedNode.value, [])
   let strSelectedNode = JSON.stringify( selectedNode.value, null, 2 )
   document.getElementById( 'json-display' ).textContent = strSelectedNode
   console.log( 'Selected Node:', selectedNode.value );
+  resetCrumbs()
+
 }
+
+const resetCrumbs = () => {
+  // use currently selected label to create crumb trail
+  let crumbTrail = []
+  crumbs.value = findLabelWithBreadcrumb( data[0], selected.value, crumbTrail );
+  console.log( crumbs.value );
+
+  // replace breadcrumb string
+  const container = document.getElementById( 'breadcrumbs' )
+  container.textContent = crumbs.value.join('  /  ')
+}
+
 const searchJSONforValueReturningNode = ( obj, value ) => {
   if ( typeof obj !== 'object' || obj === null ) return null;
 
@@ -95,16 +106,31 @@ const searchJSONforValueReturningNode = ( obj, value ) => {
   }
   return null;
 }
-const traverse = (node, path) => {
-    for (let key in node) {
-        let newPath = path.concat(key);
-        if (Object.keys(node[key]).length === 0) {
-            crumbs.value.push(newPath);
-        } else {
-            traverse(node[key], newPath);
-        }
+
+function findLabelWithBreadcrumb ( obj, targetLabel, breadcrumb = [] ) {
+  // Add current object's label to the breadcrumb trail
+  breadcrumb.push( obj.label );
+
+  // Check if the current object's label matches the target
+  if ( obj.label === targetLabel ) {
+    return breadcrumb;
+  }
+
+  // If the object has children, traverse them
+  if ( obj.children && Array.isArray( obj.children ) ) {
+    for ( let child of obj.children ) {
+      const result = findLabelWithBreadcrumb( child, targetLabel, [...breadcrumb] );
+      if ( result ) {
+        return result; // Return the breadcrumb trail
+      }
     }
+  }
+
+  // Remove current object's label if no match is found
+  breadcrumb.pop();
+  return null;
 }
+
 
 </script>
 <style scoped>
