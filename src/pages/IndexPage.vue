@@ -3,11 +3,8 @@
     <img
       alt="ATOS logo"
       src="/src/assets/logo1.jpg"
-      style="width: 700px; height: 700px"
+      style="width: 70%; height: 70%"
     >
   </q-page>
 </template>
 
-<script setup>
-//
-</script>

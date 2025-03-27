@@ -77,10 +77,10 @@ const linksList = [
     link: 'thoughts'
   },
   {
-    title: 'Thoughts',
+    title: 'Beta',
     caption: 'Experimental',
     icon: 'psychology_alt',
-    link: 'thoughts2'
+    link: 'beta'
   }
 ]
 

@@ -61,7 +61,7 @@ export default defineConfig((ctx) => {
 
       // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},
-      
+
       vitePlugins: [
         ['@intlify/unplugin-vue-i18n/vite', {
           // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
@@ -88,8 +88,24 @@ export default defineConfig((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#devserver
     devServer: {
+      // vueOptionsAPI: false,
       // https: true,
-      open: true // opens browser window automatically
+      vueDevtools: true,
+      open: true, // opens browser wind'ow automatically
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3000/api/data/',
+          changeOrigin: false,
+          ws: true,
+          prewrite: ( path ) => path.replace( /^\/api/, '' ),
+        },
+        '/fakeapi': {
+          target: 'https://jsonplaceholder.typicode.com/todos/',
+          changeOrigin: false,
+          ws: true,
+          rewrite: ( path ) => path.replace( /^\/fakeapi/, '' ),
+        }
+      },
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#framework

@@ -20,19 +20,24 @@
     >
       <q-card-section>
         <q-banner rounded>
+
           <div id="breadcrumbs">
             TEST
           </div>
         </q-banner>
       </q-card-section>
       <q-card-section>
-        <strong>Selected Node (details below):</strong><q-space />
-        <q-icon
-          right
-          size="2em"
-          :name="currentNodeIsFolder ? 'folder' : 'energy_savings_leaf'"
-        ></q-icon>
+        <div class="text-h5 q-mt-sm q-mb-xs">{{ selectedNode?.description?.title }}</div>
+        <div class="text-overline text-orange-9">
+          {{ selectedNode?.description?.para.join() }}
+        </div>
+      </q-card-section>
 
+      <q-card-section class="text-overline">
+        Selected Node (details below)
+        <q-chip :icon="currentNodeIsFolder ? 'folder' : 'energy_savings_leaf'">
+          {{ currentNodeIsFolder ? 'Folder' : 'Leaf' }}
+        </q-chip>
       </q-card-section>
       <q-card-actions>
         <q-space />
@@ -49,6 +54,7 @@
 
       <q-slide-transition>
         <div v-show="expanded">
+          <q-chip icon="event">Details</q-chip>
           <q-separator />
           <pre id="json-display"></pre>
 
@@ -61,19 +67,37 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import data from 'src/data.json'
+import { ref, computed, onMounted } from 'vue'
+import api from 'axios'
 
-const crumbs = ref([])
+// import data from 'src/data.json'
+
+const crumbs = ref( ['Test2', 'Test3'] )
 const selectedNode = ref( null )
 const selected = ref( 'Food' )
-const srcData = ref( data )
+const srcData = ref( [] )
+const error = ref( null )
+const loading = ref( false )
 const expanded = ref( false )
 const currentNodeIsFolder = computed( () => {
   return selectedNode.value !== null && Object.prototype.hasOwnProperty.call( selectedNode.value, 'children' )
 } )
+
+const refreshData = ( async () => {
+  try {
+    const response = await api.get( 'http://localhost:3000/api/data' ); // Use your Axios instance
+    srcData.value = response.data;
+  } catch ( err ) {
+    error.value = 'Error fetching data';
+    console.error( err );
+  } finally {
+    loading.value = false;
+  }
+} );
+
+onMounted( () => refreshData() )
 const onNodeSelect = ( selected ) => {
-  selectedNode.value = searchJSONforValueReturningNode( data[0], selected );
+  selectedNode.value = searchJSONforValueReturningNode( srcData.value[0], selected );
   let strSelectedNode = JSON.stringify( selectedNode.value, null, 2 )
   document.getElementById( 'json-display' ).textContent = strSelectedNode
   console.log( 'Selected Node:', selectedNode.value );
@@ -84,7 +108,7 @@ const onNodeSelect = ( selected ) => {
 const resetCrumbs = () => {
   // use currently selected label to create crumb trail
   let crumbTrail = []
-  crumbs.value = findLabelWithBreadcrumb( data[0], selected.value, crumbTrail );
+  crumbs.value = findLabelWithBreadcrumb( srcData.value[0], selected.value, crumbTrail );
   console.log( crumbs.value );
 
   // replace breadcrumb string
