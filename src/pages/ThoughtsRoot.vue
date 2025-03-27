@@ -1,11 +1,11 @@
 <template>
 
   <q-page
-    padding
+    q-pa-xl
     class="row justify-center"
   >
     <q-tree
-      class="col-6"
+      class="col-6 q-pa-md"
       :nodes="srcData"
       node-key="label"
       selected-color="primary"
@@ -14,15 +14,16 @@
       accordion
     />
     <q-card
-      class="col-6"
-      flat
-      bordered
+    class="col-7"
+    flat
+    bordered
     >
-      <q-card-section>
-        <q-banner rounded>
-
+    <q-card-section>
+      <node-view class='col-6' v-model:formData="selectedNode"></node-view>
+    </q-card-section>
+    </q-card>
+        <!--<q-banner rounded>
           <div id="breadcrumbs">
-            TEST
           </div>
         </q-banner>
       </q-card-section>
@@ -60,17 +61,16 @@
 
         </div>
       </q-slide-transition>
-    </q-card>
+    </q-card> -->
 
   </q-page>
 
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import api from 'axios'
-
-// import data from 'src/data.json'
+import NodeView from 'src/components/NodeForm.vue'
 
 const crumbs = ref( ['Test2', 'Test3'] )
 const selectedNode = ref( null )
@@ -78,10 +78,10 @@ const selected = ref( 'Food' )
 const srcData = ref( [] )
 const error = ref( null )
 const loading = ref( false )
-const expanded = ref( false )
-const currentNodeIsFolder = computed( () => {
-  return selectedNode.value !== null && Object.prototype.hasOwnProperty.call( selectedNode.value, 'children' )
-} )
+// const expanded = ref( false )
+// const currentNodeIsFolder = computed( () => {
+//   return selectedNode.value !== null && Object.prototype.hasOwnProperty.call( selectedNode.value, 'children' )
+// } )
 
 const refreshData = ( async () => {
   try {
@@ -95,25 +95,23 @@ const refreshData = ( async () => {
   }
 } );
 
-onMounted( () => refreshData() )
 const onNodeSelect = ( selected ) => {
   selectedNode.value = searchJSONforValueReturningNode( srcData.value[0], selected );
-  let strSelectedNode = JSON.stringify( selectedNode.value, null, 2 )
-  document.getElementById( 'json-display' ).textContent = strSelectedNode
+
+  // let strSelectedNode = JSON.stringify( selectedNode.value, null, 2 )
+  // document.getElementById( 'json-display' ).textContent = strSelectedNode
   console.log( 'Selected Node:', selectedNode.value );
-  resetCrumbs()
+  selectedNode.value = Object.assign( {}, selectedNode.value, { 'trail': getCrumbString() })
 
 }
 
-const resetCrumbs = () => {
+const getCrumbString = () => {
   // use currently selected label to create crumb trail
-  let crumbTrail = []
-  crumbs.value = findLabelWithBreadcrumb( srcData.value[0], selected.value, crumbTrail );
-  console.log( crumbs.value );
+  crumbs.value = findLabelWithBreadcrumb( srcData.value[0], selected.value, [] );
+  console.log( `Current Crumbs: ${crumbs.value}` );
 
-  // replace breadcrumb string
-  const container = document.getElementById( 'breadcrumbs' )
-  container.textContent = crumbs.value.join('  /  ')
+//   // replace breadcrumb string
+//   /document.getElementById( 'breadcrumbs' ).textContent = crumbs.value.join('  /  ')
 }
 
 const searchJSONforValueReturningNode = ( obj, value ) => {
@@ -131,7 +129,7 @@ const searchJSONforValueReturningNode = ( obj, value ) => {
   return null;
 }
 
-function findLabelWithBreadcrumb ( obj, targetLabel, breadcrumb = [] ) {
+const findLabelWithBreadcrumb = ( obj, targetLabel, breadcrumb = [] ) => {
   // Add current object's label to the breadcrumb trail
   breadcrumb.push( obj.label );
 
@@ -155,6 +153,7 @@ function findLabelWithBreadcrumb ( obj, targetLabel, breadcrumb = [] ) {
   return null;
 }
 
+onMounted( () => refreshData() )
 
 </script>
 <style scoped>
