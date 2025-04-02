@@ -8,10 +8,11 @@
   "private": true,
   "scripts": {
     "server": "json-server -w ./backend/data2.json",
+    "server2": "json-server -w -p 3001 ./backend/data.json",
     "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{js,cjs,mjs,vue}\"",
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"No test specified\" && exit 0",
-    "start": "concurrently \"yarn run server\" \"npm run dev\"",
+    "start": "concurrently \"yarn run server\" \"yarn run server2 \" \"npm run dev\"",
     "dev": "quasar d",
     "build": "quasar build",
     "postinstall": "quasar prepare"

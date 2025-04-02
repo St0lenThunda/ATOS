@@ -1,7 +1,7 @@
 <template>
   <li>
     <div @click="toggle">
-      <q-icon :name="isObject || isArray ? 'folder' : 'leaf'" class="q-pa-sm" />
+      <q-icon :name="isObject || isArray ? 'folder' : 'eco'" class="q-pa-sm" />
       <span v-if=" isObject ">{{ nodeKey }}: {</span>
         <span v-else-if=" isArray ">{{ nodeKey }}: [</span>
         <span v-else>{{ nodeKey }}: {{ nodeValue }}</span>

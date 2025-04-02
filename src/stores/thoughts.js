@@ -5,14 +5,18 @@ export const useThoughtStore = defineStore('thoughtStore', {
     loading: false,
     error: null,
     thoughts: {},
-    url: 'http://localhost:3000/Purchases',
+    currentUrl: '',
+    urls: ['http://localhost:3000/Purchases', 'http://localhost:3001/0'],
   }),
   getters: {},
   actions: {
-    async getThoughts() {
+    // get data from api (default to first item in urls array)
+    async getThoughts ( url ) {
+      if ( !url ) url = this.urls[0]
       this.loading = true
+      this.currentUrl = url
       try {
-        const res = await fetch(this.url)
+        const res = await fetch(url)
         const data = await res.json()
         this.thoughts = data
       } catch (err) {

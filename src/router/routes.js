@@ -5,7 +5,7 @@ const routes = [
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
       { path: 'thoughts', name: 'thoughts', component: () => import('src/pages/ThoughtsRoot.vue') },
-      { path: 'beta', name: 'beta', component: () => import('src/pages/BetaComponent.vue') },
+      { path: 'api', name: 'apiViewer', component: () => import('src/pages/ApiViewer.vue') },
       { path: 'beta2', name: 'beta2', component: () => import('src/pages/JsonTreeViewer.vue') },
       { path: 'beta3', name: 'beta3', component: () => import('src/pages/JsonTreeViewer.vue') },
     ],
