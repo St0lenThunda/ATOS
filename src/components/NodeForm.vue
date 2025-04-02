@@ -1,32 +1,26 @@
 <template>
   <q-form v-if="formData">
     <q-field>
-
-      <pre>
-        {{ formData }}
-      </pre>
+      <div class="q-pa-md q-gutter-sm">
+        <q-tree :nodes="[formData]" node-key="label" />
+      </div>
     </q-field>
-    <!-- <q-input
-      filled
-      v-model="formData.description.title"
-      label="Selected Node"
-    />
+    <q-input filled v-model="formData.description.title" label="Selected Node" />
     <div class="text-overline text-orange-9">
       {{ formData?.description?.para.join() }}
-    </div> -->
-
+    </div>
   </q-form>
 </template>
 
 <script setup>
-import { toRefs } from 'vue';
+import { toRefs } from 'vue'
 
-const props = defineProps( {
+const props = defineProps({
   formData: {
     type: Object,
-    required: true
-  }
-} );
+    required: true,
+  },
+})
 
-const { formData } = toRefs( props );
+const { formData } = toRefs(props)
 </script>

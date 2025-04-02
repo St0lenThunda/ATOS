@@ -7,10 +7,12 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "server": "json-server -w ./backend/data2.json",
     "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{js,cjs,mjs,vue}\"",
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"No test specified\" && exit 0",
-    "dev": "quasar dev",
+    "start": "concurrently \"yarn run server\" \"npm run dev\"",
+    "dev": "quasar d",
     "build": "quasar build",
     "postinstall": "quasar prepare"
   },
@@ -18,6 +20,7 @@
     "@quasar/extras": "^1.16.4",
     "@vueuse/core": "^13.0.0",
     "axios": "^1.2.1",
+    "liquor-tree": "^0.2.70",
     "pinia": "^3.0.1",
     "quasar": "^2.16.0",
     "vue": "^3.4.18",

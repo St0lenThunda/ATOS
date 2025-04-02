@@ -1,36 +1,26 @@
 <template>
-  <div>
-    <h1>Data from API</h1>
-    <div v-if=" loading ">Loading...</div>
-    <div v-else-if=" error ">{{ error }}</div>
-    <pre v-else>
-     {{data }}
+  <div><h2>DATA API</h2></div>
+  <div class="flex items-center">
+    <h6>
+      <small
+        ><em>(url: {{ url }})</em></small
+      >
+    </h6>
+    <div v-if="loading">Loading...</div>
+    <div v-else-if="error">{{ error }}</div>
+    <pre class="q-pa-lg" v-else>
+    {{ thoughts }}
     </pre>
   </div>
 </template>
-
 <script setup>
-import { onMounted, ref } from 'vue';
-import api from 'axios'
+import { useThoughtStore } from 'src/stores/thoughts.js'
+import { storeToRefs } from 'pinia'
+import { onMounted } from 'vue'
+const thoughtStore = useThoughtStore()
 
-const data = ref( [] );
-const loading = ref( true );
-const error = ref( null );
-
-// Call API on component mount
-onMounted( async () => {
-  try {
-    const response = await api.get( 'http://localhost:3000/api/data/' ); // Use your Axios instance
-    data.value = JSON.stringify(response.data,null,2);
-  } catch ( err ) {
-    error.value = 'Error fetching data';
-    console.error( err );
-  } finally {
-    loading.value = false;
-  }
-} );
-
-
+const { error, loading, url, thoughts } = storeToRefs(thoughtStore)
+onMounted(() => thoughtStore.getThoughts())
 </script>
 <style scoped>
 pre {

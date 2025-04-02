@@ -7,9 +7,7 @@
         "icon": "house",
         "description": {
           "title": "House",
-          "para": [
-            "Purchases related to the home in general"
-          ]
+          "para": ["Purchases related to the home in general"]
         },
         "children": [
           {
@@ -17,36 +15,34 @@
             "icon": "home_repair_service",
             "description": {
               "title": "Repairs and Maintainence",
-              "para": [
-                "Purchases related to the home repairs or improvements"
-              ]
+              "para": ["Purchases related to the home repairs or improvements"]
             }
           },
           {
-          "label": "Individuals",
-          "icon": "groups",
-          "description": {
-            "title": "Individual purchases",
-            "para": [
-              "Lorem ipsum dolor sit, amet consectetur adipisicing minima assumenda consectetur culpa fuga nulla ullam.In, libero",
-              "elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi "
-            ]
-          },
-          "children": [
-            {
-              "label": "Antonio",
-              "icon": "person",
-              "description": {
-                "title": "Me",
-                "para": [
-                  "Lorem ipsum dolor sit, amet consectetur adipisicing minima assumenda consectetur culpa fuga nulla ullam.In, libero",
-                  "elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi "
-                ]
+            "label": "Individuals",
+            "icon": "groups",
+            "description": {
+              "title": "Individual purchases",
+              "para": [
+                "Lorem ipsum dolor sit, amet consectetur adipisicing minima assumenda consectetur culpa fuga nulla ullam.In, libero",
+                "elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi "
+              ]
+            },
+            "children": [
+              {
+                "label": "Antonio",
+                "icon": "person",
+                "description": {
+                  "title": "Me",
+                  "para": [
+                    "Lorem ipsum dolor sit, amet consectetur adipisicing minima assumenda consectetur culpa fuga nulla ullam.In, libero",
+                    "elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi "
+                  ]
+                }
               }
-            }
-          ]
-        }
-      ]
+            ]
+          }
+        ]
       }
     ]
   }
