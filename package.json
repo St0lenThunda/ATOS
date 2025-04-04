@@ -7,12 +7,13 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "start": "concurrently \"yarn run server\" \"yarn run server2 \" \"yarn run server3 \" \"npm run dev\"",
     "server": "json-server -w ./backend/data2.json",
     "server2": "json-server -w -p 3001 ./backend/data.json",
+    "server3": "json-server -w -p 3002 ./backend/data3.json",
     "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{js,cjs,mjs,vue}\"",
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"No test specified\" && exit 0",
-    "start": "concurrently \"yarn run server\" \"yarn run server2 \" \"npm run dev\"",
     "dev": "quasar d",
     "build": "quasar build",
     "postinstall": "quasar prepare"
@@ -21,6 +22,8 @@
     "@quasar/extras": "^1.16.4",
     "@vueuse/core": "^13.0.0",
     "axios": "^1.2.1",
+    "json-server": "^1.0.0-beta.3",
+    "jsonpath": "^1.1.1",
     "liquor-tree": "^0.2.70",
     "pinia": "^3.0.1",
     "quasar": "^2.16.0",
@@ -46,5 +49,15 @@
     "node": "^28 || ^26 || ^24 || ^22 || ^20 || ^18",
     "npm": ">= 6.13.4",
     "yarn": ">= 1.21.1"
-  }
+  },
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/St0lenThunda/ATOS.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/St0lenThunda/ATOS/issues"
+  },
+  "homepage": "https://github.com/St0lenThunda/ATOS#readme"
 }

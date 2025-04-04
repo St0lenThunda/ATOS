@@ -1,4 +1,18 @@
-{
+let idCounter = 0;
+
+function addIdToNestedObject ( obj ) {
+  if ( typeof obj === 'object' && obj !== null ) {
+    obj.id = idCounter++;
+    for ( let key in obj ) {
+      if ( Object.prototype.hasOwnProperty.call(obj,  key ) && typeof obj[key] === 'object' ) {
+        addIdToNestedObject( obj[key] );
+      }
+    }
+  }
+}
+
+// Example usage
+let jsonObject = {
   "Purchases": {
     "House": {
       "icon": "house",
@@ -8,15 +22,15 @@
         "title": "Repairs & Maintenance",
         "text": "Purchases related to the home repairs or improvements",
         "children": [{
-            "label": "Doors",
-            "icon": "home_repair_service",
-            "description": {
-              "title": "Replace or repair",
-              "para": [
-                "Purchases door related hardware"
-              ]
-            }
-          }]
+          "label": "Doors",
+          "icon": "home_repair_service",
+          "description": {
+            "title": "Replace or repair",
+            "para": [
+              "Purchases door related hardware"
+            ]
+          }
+        }]
       },
       "Individuals": {
         "icon": "groups",
@@ -38,3 +52,7 @@
     }
   }
 }
+
+console.log( 'Before:' + JSON.stringify( jsonObject, null, 2 ) );
+addIdToNestedObject( jsonObject );
+console.log( 'After:' + JSON.stringify( jsonObject, null, 2 ) );

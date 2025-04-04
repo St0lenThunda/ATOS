@@ -1,51 +1,78 @@
 <template>
-  <q-page q-pa-xl>
-    <q-fab
-      color="purple"
-      icon="keyboard_arrow_right"
-      direction="right"
+  <q-page class="q-pa-xl row">
+    <q-page-sticky
+      position="bottom-left"
+      :offset="[18, 18]"
     >
-      <q-fab-action
-        color="secondary"
-        icon="restart_alt"
-        label="Refresh Api"
-        @click="refresh"
-      />
-      <q-fab-action
-        :label="store.currentUrl"
-        color="primary"
-        flat
-        icon="link"
-      />
-
-    </q-fab>
-
-
-    <div class="row justify-center">
-
-      <q-tree
-        q-if="store.thoughts"
-        class="col-6 q-pa-md"
-        :nodes="[store.thoughts]"
-        node-key="label"
-        selected-color="primary"
-        v-model:selected="selected"
-        @update:selected="onNodeSelect"
-        accordion
-      />
-      <q-card
-        class="col-6"
-        flat
-        bordered
+      <q-fab
+        color="purple"
+        icon="keyboard_arrow_right"
+        direction="right"
       >
-        <q-card-section v-if=" selectedNode ">
-          <node-view
-            class="col-6"
-            :formData="selectedNode"
-          ></node-view>
-        </q-card-section>
-      </q-card>
-    </div>
+        <q-fab-action
+          color="secondary"
+          icon="restart_alt"
+          label="Refresh Api"
+          @click="refresh"
+        />
+        <q-fab-action
+          :label="store.currentUrl"
+          color="primary"
+          flat
+          icon="link"
+        />
+
+      </q-fab>
+    </q-page-sticky>
+
+    <q-tree
+      q-if="store.thoughts"
+      class="col-6 q-pa-md"
+      :nodes="[store.thoughts]"
+      node-key="label"
+      selected-color="primary"
+      v-model:selected="selected"
+      @update:selected="onNodeSelect"
+      accordion
+    />
+
+    <q-card
+      class="col-6"
+      flat
+      bordered
+      v-if=" selectedNode "
+    >
+      <q-card-section>
+        <div id="breadcrumbs"></div>
+
+        <node-view
+          class="col-6"
+          :formData="selectedNode"
+        ></node-view>
+
+      </q-card-section>
+      <q-card-actions>
+
+        <q-space />
+
+        <q-btn
+          color="grey"
+          round
+          flat
+          dense
+          :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+          @click="expanded = !expanded"
+        />
+      </q-card-actions>
+      <q-slide-transition>
+        <div v-show="expanded">
+          <q-separator />
+          <q-card-section class="text-subtitle2">
+            <pre id="json-display"></pre>
+          </q-card-section>
+        </div>
+      </q-slide-transition>
+    </q-card>
     <q-ajax-bar
       ref="bar"
       position="bottom"
@@ -58,20 +85,16 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-// import api from 'axios'
 import NodeView from 'src/components/NodeForm.vue'
 import { useThoughtStore } from 'src/stores/thoughts'
 const store = useThoughtStore()
-const bar = ref(null)
+const bar = ref( null )
 const crumbs = ref( [] )
-const selectedNode = ref( null )
-const selected = ref( 'Food' )
+const selectedNode = ref( {} )
+const selected = ref( '' )
 const srcData = []
 const apiV1 = 'http://localhost:3001/0'
-// const expanded = ref( false )
-// const currentNodeIsFolder = computed( () => {
-//   return selectedNode.value !== null && Object.prototype.hasOwnProperty.call( selectedNode.value, 'children' )
-// } )
+let expanded = true
 const refresh = async () => {
   const barRef = bar.value
   barRef.start()
@@ -82,23 +105,12 @@ const refresh = async () => {
 store.$subscribe( ( mutation, state ) => {
   console.log( mutation, state )
 } )
-// const refreshData = async () => {
-//   try {
-//     const response = await api.get( apiV1 ) // Use your Axios instance
-//     srcData.value = response.data
-//   } catch (err) {
-//     error.value = 'Error fetching data'
-//     console.error(err)
-//   } finally {
-//     loading.value = false
-//   }
-// }
 
 const onNodeSelect = ( selected ) => {
   selectedNode.value = searchJSONforValueReturningNode( store.thoughts, selected )
 
-  // let strSelectedNode = JSON.stringify( selectedNode.value, null, 2 )
-  // document.getElementById( 'json-display' ).textContent = strSelectedNode
+  let strSelectedNode = JSON.stringify( selectedNode.value, null, 2 )
+  document.getElementById( 'json-display' ).textContent = strSelectedNode
   console.log( 'Selected Node:', selectedNode.value )
   selectedNode.value = Object.assign( {}, selectedNode.value, { trail: getCrumbString() } )
 }
@@ -108,8 +120,8 @@ const getCrumbString = () => {
   crumbs.value = findLabelWithBreadcrumb( store.thoughts, selected.value, [] )
   console.log( `Current Crumbs: ${crumbs.value}` )
 
-  //   // replace breadcrumb string
-  //   /document.getElementById( 'breadcrumbs' ).textContent = crumbs.value.join('  /  ')
+  // replace breadcrumb string
+  document.getElementById( 'breadcrumbs' ).textContent = crumbs.value.join( '  /  ' )
 }
 
 const searchJSONforValueReturningNode = ( obj, value ) => {
@@ -152,6 +164,8 @@ const findLabelWithBreadcrumb = ( obj, targetLabel, breadcrumb = [] ) => {
 
 onMounted( () => refresh() )
 </script>
+
+
 <style scoped>
 pre {
   background-color: #f4f4f4;

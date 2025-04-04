@@ -1,4 +1,5 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
+import jsonPath from 'jsonpath'
 
 export const useThoughtStore = defineStore('thoughtStore', {
   state: () => ({
@@ -6,9 +7,22 @@ export const useThoughtStore = defineStore('thoughtStore', {
     error: null,
     thoughts: {},
     currentUrl: '',
+    nextId: 0,
     urls: ['http://localhost:3000/Purchases', 'http://localhost:3001/0'],
   }),
-  getters: {},
+  getters: {
+    lastId () {
+      try {
+        // get all ids
+        var ids = jsonPath.query( this.thoughts, "$..id" );
+
+        this.nextId = Math.max(...ids) + 1
+      } catch ( err ) {
+        console.log( err )
+        this.nextId = err
+      }
+    }
+  },
   actions: {
     // get data from api (default to first item in urls array)
     async getThoughts ( url ) {
