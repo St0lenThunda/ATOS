@@ -1,51 +1,51 @@
 {
-"Purchases": {
-  "House": {
-    "icon": "house",
-    "text": "Purchases related to the home",
-    "Repairs": {
-      "icon": "home_repair_service",
-      "title": "Repairs & Maintenance",
-      "text": "Purchases related to the home repairs or improvements",
-      "children": [
-        {
-          "label": "Doors",
-          "icon": "home_repair_service",
-          "description": {
-            "title": "Replace or repair",
-            "para": [
-              "Purchases door related hardware"
-            ],
-            "id": 6
+  "id": 0,
+  "Purchases": {
+    "House": {
+      "icon": "house",
+      "id": 2,
+      "Individuals": {
+        "children": [
+          {
+            "icon": "person",
+            "id": 10,
+            "text": "Lorem ipsum dolor sit, amet consectetur adipisicing minima assumenda consectetur culpa fuga nulla ullam.In, libero elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi ",
+            "title": "Antonio"
           },
-          "id": 5
-        }
-      ],
-      "id": 3
+          {
+            "icon": "person",
+            "id": 11,
+            "text": "Lorem ipsum dolor sit, amet consectetur adipisicing minima assumenda consectetur culpa fuga nulla ullam.In, libero elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi ",
+            "title": "Alexis"
+          }
+        ],
+        "icon": "groups",
+        "id": 8,
+        "text": "Lorem ipsum dolor sit, amet consectetur adipisicing minima assumenda consectetur culpa fuga nulla ullam.In, libero  elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi ",
+        "title": "Individual Purchases"
+      },
+      "Repairs": {
+        "children": [
+          {
+            "description": {
+              "id": 6,
+              "para": [
+                "Purchases door related hardware"
+              ],
+              "title": "Replace or repair"
+            },
+            "icon": "home_repair_service",
+            "id": 5,
+            "label": "Doors"
+          }
+        ],
+        "icon": "home_repair_service",
+        "id": 3,
+        "text": "Purchases related to the home repairs or improvements",
+        "title": "Repairs & Maintenance"
+      },
+      "text": "Purchases related to the home"
     },
-    "Individuals": {
-      "icon": "groups",
-      "title": "Individual Purchases",
-      "text": "Lorem ipsum dolor sit, amet consectetur adipisicing minima assumenda consectetur culpa fuga nulla ullam.In, libero  elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi ",
-      "children": [
-        {
-          "title": "Antonio",
-          "icon": "person",
-          "text": "Lorem ipsum dolor sit, amet consectetur adipisicing minima assumenda consectetur culpa fuga nulla ullam.In, libero elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi ",
-          "id": 10
-        },
-        {
-          "title": "Alexis",
-          "icon": "person",
-          "text": "Lorem ipsum dolor sit, amet consectetur adipisicing minima assumenda consectetur culpa fuga nulla ullam.In, libero elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi ",
-          "id": 11
-        }
-      ],
-      "id": 8
-    },
-    "id": 2
-  },
-  "id": 1
-},
-"id": 0
+    "id": 1
+  }
 }
