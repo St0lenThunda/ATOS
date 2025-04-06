@@ -1,6 +1,7 @@
 {
   "id": 0,
   "Purchases": {
+    "id": 1,
     "House": {
       "icon": "house",
       "id": 2,
@@ -45,7 +46,6 @@
         "title": "Repairs & Maintenance"
       },
       "text": "Purchases related to the home"
-    },
-    "id": 1
+    }
   }
 }

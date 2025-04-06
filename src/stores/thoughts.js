@@ -7,12 +7,39 @@ export const useThoughtStore = defineStore( 'thoughtStore', {
     error: null,
     thoughts: {},
     currentUrl: '',
+    selectedNode: {},
+    queryPath: '',
     nextId: 0,
     urls: ['http://localhost:3002/Purchases', 'http://localhost:3000/Purchases', 'http://localhost:3001/0'],
   } ),
   getters: {
-    apiVersion () {
-      return this.urls.length 
+    selectedKeys () {
+      var keys = []
+      if ( this.isNodeSelected ) {
+        keys = Object.keys( this.selectedNode?.value?.nodeValue )
+        keys = keys.filter( v => !['id', 'text', 'icon', 'children', 'title'].includes( v ) )
+      }
+      return keys
+    },
+    currentApiVersion () {
+      return this.urls.length
+    },
+    apiVersionList () {
+      // add api endpoint version numbers based on a FIFO array of urls
+      // reverse url array to align the indexes and create version array of
+      // key/value: key = v[#], value = url
+      var versions = this.urls?.slice( 0 ).reverse().map( ( url, idx ) => {
+        let obj = {}
+        obj['label'] = `v${idx + 1}`
+        obj['value'] = url
+        return obj
+      } )
+      console.dir( versions )
+
+      return versions
+    },
+    isNodeSelected () {
+      return ( typeof this.selectedNode.value === 'undefined' ) ? false : JSON.stringify( this.selectedNode.value ) !== '{}'
     },
     lastId () {
       try {
@@ -28,9 +55,16 @@ export const useThoughtStore = defineStore( 'thoughtStore', {
     }
   },
   actions: {
-    queryData ( jsonPathQuery ) {
+    queryData (  ) {
       //query data using jsonpath
-      return jsonPath.query( this.data, jsonPathQuery );
+      try {
+        this.selectedNode.value = jsonPath.query( this.thoughts, this.queryPath );
+
+      } catch ( e ) {
+        this.error = e
+        this.selectedNode.value = {}
+      }
+      return this.selectedNode.value
     },
     async getThoughts ( url ) {
       // get data from api (default to first item in urls array)
