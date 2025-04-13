@@ -26,29 +26,29 @@
     </q-page-sticky>
 
     <q-tree
-      q-if="store.thoughts"
-      class="col-6 q-pa-md"
-      :nodes="[store.thoughts]"
+      q-if="thoughts"
+      class="col-4 q-pa-md"
+      :nodes="[thoughts]"
       node-key="label"
       selected-color="primary"
-      v-model:selected="selected"
+      v-model:selected="selectedText"
       @update:selected="onNodeSelect"
       accordion
     />
 
     <q-card
-      class="col-6"
+      class="col-8"
       flat
       bordered
       v-if=" selectedNode "
     >
       <q-card-section>
-        <div id="breadcrumbs"></div>
+        <div id="breadcrumbs">{{ crumbTrail }}</div>
 
-        <node-view
+        <node-form
           class="col-6"
           :formData="selectedNode"
-        ></node-view>
+        ></node-form>
 
       </q-card-section>
       <q-card-actions>
@@ -68,7 +68,7 @@
         <div v-show="expanded">
           <q-separator />
           <q-card-section class="text-subtitle2">
-            <pre id="json-display"></pre>
+            <pre id="json-display"> {{  strSelectedNode }}</pre>
           </q-card-section>
         </div>
       </q-slide-transition>
@@ -85,15 +85,21 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import NodeView from 'src/components/NodeForm.vue'
+import NodeForm from 'src/components/NodeForm.vue'
 import { useThoughtStore } from 'src/stores/thoughts'
+import { storeToRefs } from 'pinia'
 const store = useThoughtStore()
+const {
+  crumbTrail,
+  selectedNode,
+  strSelectedNode,
+  thoughts,
+  selectedText
+} = storeToRefs( store )
 const bar = ref( null )
-const crumbs = ref( [] )
-const selectedNode = ref( {} )
-const selected = ref( '' )
 const srcData = []
 const apiV1 = 'http://localhost:3001/0'
+const currentNode = ref({})
 let expanded = true
 const refresh = async () => {
   const barRef = bar.value
@@ -102,65 +108,10 @@ const refresh = async () => {
   barRef.stop()
 }
 
-store.$subscribe( ( mutation, state ) => {
-  console.log( mutation, state )
-} )
-
-const onNodeSelect = ( selected ) => {
-  selectedNode.value = searchJSONforValueReturningNode( store.thoughts, selected )
-
-  let strSelectedNode = JSON.stringify( selectedNode.value, null, 2 )
-  document.getElementById( 'json-display' ).textContent = strSelectedNode
-  console.log( 'Selected Node:', selectedNode.value )
-  selectedNode.value = Object.assign( {}, selectedNode.value, { trail: getCrumbString() } )
+const onNodeSelect = () => {
+  currentNode.value = store.getCurrentNode()
 }
 
-const getCrumbString = () => {
-  // use currently selected label to create crumb trail
-  crumbs.value = findLabelWithBreadcrumb( store.thoughts, selected.value, [] )
-  console.log( `Current Crumbs: ${crumbs.value}` )
-
-  // replace breadcrumb string
-  document.getElementById( 'breadcrumbs' ).textContent = crumbs.value.join( '  /  ' )
-}
-
-const searchJSONforValueReturningNode = ( obj, value ) => {
-  if ( typeof obj !== 'object' || obj === null ) return null
-  for ( let key in obj ) {
-    if ( obj[key] === value ) {
-      return obj
-    }
-    if ( typeof obj[key] === 'object' ) {
-      let result = searchJSONforValueReturningNode( obj[key], value )
-      if ( result ) return result
-    }
-  }
-  return null
-}
-
-const findLabelWithBreadcrumb = ( obj, targetLabel, breadcrumb = [] ) => {
-  // Add current object's label to the breadcrumb trail
-  breadcrumb.push( obj.label )
-
-  // Check if the current object's label matches the target
-  if ( obj.label === targetLabel ) {
-    return breadcrumb
-  }
-
-  // If the object has children, traverse them
-  if ( obj.children && Array.isArray( obj.children ) ) {
-    for ( let child of obj.children ) {
-      const result = findLabelWithBreadcrumb( child, targetLabel, [...breadcrumb] )
-      if ( result ) {
-        return result // Return the breadcrumb trail
-      }
-    }
-  }
-
-  // Remove current object's label if no match is found
-  breadcrumb.pop()
-  return null
-}
 
 onMounted( () => refresh() )
 </script>

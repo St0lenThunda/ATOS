@@ -1,22 +1,29 @@
 <template v-if="formData">
-  <q-form >
-    <q-field>
-      <div class="q-pa-md q-gutter-sm">
-        <q-tree :nodes="[formData]" node-key="label" />
-      </div>
-    </q-field>
-    <q-input filled v-model="title" label="Selected Node" />
+    <q-list>
+      <NodeItem :formData="formData" />
+    </q-list>
+    <!-- <template v-for="key in Object.keys(formData)" :key='key'>
+      <template v-if="fieldType(formData[key]) == 'string'">
+        <template v-if="key == 'icon'">
+          <q-icon class='col-6' :name="formData[key]"></q-icon>
+        </template>
+        <template v-else>
+          <q-input class='col-6' v-model="formData[key]" :label="key" />
+        </template>
+      </template>
+      <template v-else-if="fieldType(formData[key]) == 'object'">
+        <NodeForm :formData=formData[key] />
+      </template>
+    </template>
     <div class="text-overline text-orange-9">
       {{ formData?.description?.para.join() }}
-    </div>
-  </q-form>
+    </div> -->
 </template>
 
 <script setup>
-import { toRefs, computed } from 'vue'
-const title = computed( () => {
-  return props?.description?.title || 'Title'
-})
+import { toRefs} from 'vue'
+import NodeItem from 'src/components/NodeItem.vue'
+// const fieldType = ((field) => { return (field) ? typeof field : 'string'})
 const props = defineProps({
   formData: {
     type: Object,

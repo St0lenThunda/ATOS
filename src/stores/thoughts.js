@@ -1,5 +1,6 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import jsonPath from 'jsonpath'
+import _ from "lodash";
 
 export const useThoughtStore = defineStore( 'thoughtStore', {
   state: () => ( {
@@ -8,27 +9,31 @@ export const useThoughtStore = defineStore( 'thoughtStore', {
     thoughts: {},
     currentUrl: '',
     selectedNode: {},
+    selectedText: '',
+    crumbs: [],
     queryPath: '',
     nextId: 0,
-    urls: ['http://localhost:3002/Purchases', 'http://localhost:3000/Purchases', 'http://localhost:3001/0'],
+    urls: ['http://localhost:3002/Purchases', 'http://localhost:3000/Purchases', 'http://localhost:3001/0', 'https://jsonplaceholder.typicode.com/todos'],
   } ),
   getters: {
-    selectedKeys () {
+    crumbTrail () { return _.join( this.crumbs, ' / ' ) },//this.crumbs.join( ' / ' ) || '' },
+
+    selectedKeys ( { isNodeSelected, selectedNode } ) {
       var keys = []
-      if ( this.isNodeSelected ) {
-        keys = Object.keys( this.selectedNode?.value?.nodeValue )
+      if ( isNodeSelected ) {
+        keys = Object.keys( selectedNode?.value?.nodeValue )
         keys = keys.filter( v => !['id', 'text', 'icon', 'children', 'title'].includes( v ) )
       }
       return keys
     },
-    currentApiVersion () {
-      return this.urls.length
+    currentApiVersion ( { urls } ) {
+      return urls.length
     },
-    apiVersionList () {
+    apiVersionList ( { urls } ) {
       // add api endpoint version numbers based on a FIFO array of urls
       // reverse url array to align the indexes and create version array of
       // key/value: key = v[#], value = url
-      var versions = this.urls?.slice( 0 ).reverse().map( ( url, idx ) => {
+      var versions = urls?.slice( 0 ).reverse().map( ( url, idx ) => {
         let obj = {}
         obj['label'] = `v${idx + 1}`
         obj['value'] = url
@@ -39,22 +44,82 @@ export const useThoughtStore = defineStore( 'thoughtStore', {
       return versions
     },
     isNodeSelected () {
-      return ( typeof this.selectedNode.value === 'undefined' ) ? false : JSON.stringify( this.selectedNode.value ) !== '{}'
+      return ( this.selectedNode !== null && !this.isEmptyObject( this.selectedNode ) ) 
     },
-    lastId () {
+
+    lastId ( { thoughts, nextId } ) {
       try {
         // get all ids
-        var ids = jsonPath.query( this.thoughts, "$..id" );
+        var ids = jsonPath.query( thoughts, "$..id" );
         // get the max id in the object and increment
-        this.nextId = Math.max( ...ids ) + 1
+        nextId = Math.max( ...ids ) + 1
       } catch ( err ) {
         console.log( err )
-        this.nextId = err
+        nextId = err
       }
-      return this.nextId
+      return nextId
+    },
+    strSelectedNode () {
+      return ( this.isNodeSelected ) ? JSON.stringify( this.selectedNode, null, 2 ) : '{}'
     }
   },
   actions: {
+    findBreadcrumbPath ( obj = this.selectedNode, targetId, path = [] ) {
+      debugger
+      if ( !this.selectedNode ) return null        
+    
+      for ( const key in obj ) {
+        if ( typeof obj[key] === 'object' && obj[key] !== null ) {
+          // If it's a matching node
+          if ( obj[key].id === targetId ) {
+            return [...path, key]; // Return the path including this node
+          }
+          // Search recursively
+          const result = this.findBreadcrumbPath( obj[key], targetId, [...path, key] );
+          if ( result ) return result;
+        }
+      }
+      return null; // Node not found
+    },
+    buildTrailFromSelected ( obj, targetLabel, trail = [] ) {
+      debugger
+      // Add current object's label to the trail trail
+      trail.push( obj?.label || targetLabel )
+
+      // Check if the current object's label matches the target
+      if ( obj.label === targetLabel || Object.keys( obj ).includes( targetLabel ) ) {
+        return trail
+      }
+
+      // If the object has children, traverse them
+      if ( obj.children && Array.isArray( obj.children ) ) {
+        for ( let child of obj.children ) {
+          const result = this.buildTrailFromSelected( child, targetLabel, [...trail] )
+          if ( result ) {
+            return result // Return the trail trail
+          }
+        }
+      }
+
+      // Remove current object's label if no match is found
+      trail.pop()
+      return trail
+    },
+    isEmptyObject ( obj ) {
+      return JSON.stringify( obj ) === '{}';
+    },
+    getCurrentNode ( obj ) {
+      // if no node sent find node by selected text in tree
+      if ( !obj?.nodeValue ) {
+        this.setSelectedNode( this.selectedText )
+      }
+      // set state of selectedText and node if available
+      if ( obj.nodeKey && obj.nodeKey != this.selectedText ) {
+        this.selectedText = obj.nodeKey
+      }
+      if ( obj.nodeValue ) this.selectedNode = obj.nodeValue
+      this.setCrumbString( this.selectedNode?.id )
+    },
     queryData (  ) {
       //query data using jsonpath
       try {
@@ -80,6 +145,27 @@ export const useThoughtStore = defineStore( 'thoughtStore', {
       }
       this.loading = false
     },
+    setCrumbString ( selected ) {
+      // use currently selected label to create crumb trail
+      this.crumbs = this.findBreadcrumbPath( this.thoughts, selected, [] )
+      console.log( `Current Crumbs: ${this.crumbs}` )
+    },
+    setSelectedNode () {
+      if ( this.selectedText ) this.selectedNode = this.getNodeFromLabel( this.thoughts, this.selectedText )
+    },
+    getNodeFromLabel ( obj, value ) {
+      if ( typeof obj !== 'object' || obj === null ) return null
+      for ( let key in obj ) {
+        if ( obj[key] === value ) {
+          return obj
+        }
+        if ( typeof obj[key] === 'object' ) {
+          let result = this.getNodeFromLabel( obj[key], value )
+          if ( result ) return result
+        }
+      }
+      return null
+    }
   },
 })
 

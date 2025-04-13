@@ -169,11 +169,11 @@
   <div class="flex items-center">
     <div v-if=" loading ">Loading...</div>
     <div v-else-if=" error ">{{ error }}</div>
-    <pre
+    <!-- <pre
       class="q-pa-lg"
       v-else-if=" selectedNode "
-    >{{ selectedNode.value }}</pre>
-    <pre v-else class="q-pa-lg">
+    >{{ selectedNode.value }}</pre> -->
+    <pre v-else-if="thoughts" class="q-pa-lg">
     {{ thoughts }}
     </pre>
   </div>
@@ -263,7 +263,7 @@ const {
   thoughts,
   apiVersionList,
   currentApiVersion,
-  selectedNode,
+  // selectedNode,
   queryPath
 } = storeToRefs( thoughtStore )
 
