@@ -111,7 +111,7 @@ const props = defineProps( {
   formData: {
     type: Object,
     required: true,
-  },
+  }
 } )
 
 const { formData } = toRefs( props )

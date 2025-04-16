@@ -1,29 +1,72 @@
-<template v-if="formData">
-    <q-list>
-      <NodeItem :formData="formData" />
-    </q-list>
-    <!-- <template v-for="key in Object.keys(formData)" :key='key'>
-      <template v-if="fieldType(formData[key]) == 'string'">
-        <template v-if="key == 'icon'">
-          <q-icon class='col-6' :name="formData[key]"></q-icon>
-        </template>
-        <template v-else>
-          <q-input class='col-6' v-model="formData[key]" :label="key" />
-        </template>
+<template>
+  <q-card
+    bordered
+    dense
+    padding
+  >
+    <q-card-section>
+      Change Icon
+    </q-card-section>
+    <q-card-section
+      top
+      side
+    >
+      <icon-picker v-model="formData['icon']" />
+    </q-card-section>
+    <q-item-section></q-item-section>
+    <q-card-section
+      v-for=" key in Object.keys( formData ) "
+      :key="key"
+    >
+
+      <template v-if=" fieldType( formData[key] ) == 'string' ">
+        <q-item-section inset=1>
+          <q-input
+            class="col-6 text-capitalize"
+            v-model="formData[key]"
+            :label="key"
+          />
+
+        </q-item-section>
       </template>
-      <template v-else-if="fieldType(formData[key]) == 'object'">
-        <NodeForm :formData=formData[key] />
+      <template v-else-if=" fieldType( formData[key] ) == 'object' ">
+        <q-item-section>
+          <span class="text-center text-orange text-subtitle1 text-weight-bolder q-pa-md">Children</span>
+          <q-tree
+            :nodes="formData[key]"
+            node-key="label"
+            dense
+            accordion
+          />
+        </q-item-section>
       </template>
-    </template>
-    <div class="text-overline text-orange-9">
-      {{ formData?.description?.para.join() }}
-    </div> -->
+    </q-card-section>
+    <q-separator
+      spaced
+      dark
+    />
+    <q-card-actions
+      top
+      side
+    >
+      <q-btn
+        :color="store.dirty ? 'secondary' : 'accent'"
+        icon="save"
+        label="Save"
+        @click="store.updateNodeById( formData['id'] )"
+      />
+    </q-card-actions>
+  </q-card>
 </template>
 
 <script setup>
-import { toRefs} from 'vue'
-import NodeItem from 'src/components/NodeItem.vue'
-// const fieldType = ((field) => { return (field) ? typeof field : 'string'})
+import { toRefs } from 'vue'
+import { useThoughtStore } from 'src/stores/thoughts'
+import IconPicker from 'src/components/IconPicker.vue'
+
+const store = useThoughtStore()
+
+const fieldType = ( field ) => typeof field 
 const props = defineProps({
   formData: {
     type: Object,

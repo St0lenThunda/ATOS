@@ -1,63 +1,51 @@
 [
   {
+    "label": "ROOT",
+    "icon": "device_hub",
+    "children": [
+  {
     "label": "Purchases",
+    "id": 0,
+    "icon":"paid",
     "children": [
       {
+        "id": 1,
         "label": "House",
         "icon": "house",
-        "description": {
-          "title": "House",
-          "para": ["Purchases related to the home in general"]
-        },
+        "text": "Purchases related to the home in general",
         "children": [
           {
+            "id": 2,
             "label": "Repairs & Maintenance",
             "icon": "home_repair_service",
-            "description": {
-              "title": "Repairs and Maintainence",
-              "para": [
-                "Purchases related to the home repairs or improvements"
-              ]
-            },
+            "text": "Purchases related to the home repairs or improvements",
             "children": [
               {
+                "id": 3,
                 "label": "Doors",
-                "icon": "home_repair_service",
-                "description": {
-                  "title": "Replace or repair",
-                  "para": [
-                    "Purchases door related hardware"
-                  ]
-                }
+                "icon": "door_open",
+                "text": "Purchases door related hardware"
               }
             ]
           },
           {
+            "id": 4,
             "label": "Individuals",
             "icon": "groups",
-            "description": {
-              "title": "Individual purchases",
-              "para": [
-                "Lorem ipsum dolor sit, amet consectetur adipisicing minima assumenda consectetur culpa fuga nulla ullam.In, libero",
-                "elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi "
-              ],
+            "text": "Lorem ipsum dolor sit, amet consectetur adipisicing minima assumenda consectetur culpa fuga nulla ullam.In, libero elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi ",
             "children": [
               {
+                "id": 5,
                 "label": "Antonio",
                 "icon": "person",
-                "description": {
-                  "title": "Me",
-                  "para": [
-                    "Lorem ipsum dolor sit, amet consectetur adipisicing minima assumenda consectetur culpa fuga nulla ullam.In, libero",
-                    "elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi "
-                  ]
-                }
+                "text": "Lorem ipsum dolor sit, amet consectetur adipisicing minima assumenda consectetur culpa fuga nulla ullam.In, libero elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi "
               }
             ]
           }
-        }
         ]
       }
     ]
   }
+]
+}
 ]

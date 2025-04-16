@@ -1,29 +1,5 @@
 <template>
   <q-page class="q-pa-xl row">
-    <q-page-sticky
-      position="bottom-left"
-      :offset="[18, 18]"
-    >
-      <q-fab
-        color="purple"
-        icon="keyboard_arrow_right"
-        direction="right"
-      >
-        <q-fab-action
-          color="secondary"
-          icon="restart_alt"
-          label="Refresh Api"
-          @click="refresh"
-        />
-        <q-fab-action
-          :label="store.currentUrl"
-          color="primary"
-          flat
-          icon="link"
-        />
-
-      </q-fab>
-    </q-page-sticky>
 
     <q-tree
       q-if="thoughts"
@@ -35,44 +11,58 @@
       @update:selected="onNodeSelect"
       accordion
     />
-
-    <q-card
-      class="col-8"
-      flat
-      bordered
-      v-if=" selectedNode "
-    >
-      <q-card-section>
-        <div id="breadcrumbs">{{ crumbTrail }}</div>
-
-        <node-form
-          class="col-6"
-          :formData="selectedNode"
-        ></node-form>
-
-      </q-card-section>
-      <q-card-actions>
-
-        <q-space />
-
-        <q-btn
-          color="grey"
-          round
-          flat
-          dense
-          :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-          @click="expanded = !expanded"
-        />
-      </q-card-actions>
-      <q-slide-transition>
-        <div v-show="expanded">
-          <q-separator />
-          <q-card-section class="text-subtitle2">
-            <pre id="json-display"> {{  strSelectedNode }}</pre>
+    <div class="column col-8">
+      <q-banner class="text-center">
+        <span class='q-pa-md text-uppercase bg-orange text-white text-weight-bolder'>
+          <q-avatar
+            icon="cookie"
+            v-show="crumbTrail != ''"
+          />
+          {{ crumbTrail }}
+        </span>
+      </q-banner>
+      <q-expansion-item
+        popup
+        expand-separator
+        v-show="isNodeSelected"
+        :icon="selectedNode.icon || 'help'"
+        :label="selectedNode.label"
+        :caption="selectedNode.text"
+        expand-icon="edit"
+        expanded-icon="close"
+      >
+        <q-card
+          class="shadow-8 "
+          bordered
+        >
+          <q-card-section class="column">
+            <node-form :formData="selectedNode"></node-form>
           </q-card-section>
-        </div>
-      </q-slide-transition>
-    </q-card>
+          <q-card-actions>
+            <q-space />
+  
+            <q-btn
+              color="grey"
+              round
+              flat
+              dense
+              :label="expanded ? 'Hide JSON' : 'Show JSON'"
+              :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+              @click="expanded = !expanded"
+            />
+          </q-card-actions>
+          <q-slide-transition>
+            <div v-show="expanded">
+              <q-separator />
+              <q-card-section class="text-subtitle2">
+                <pre id="json-display"> {{ strSelectedNode }}</pre>
+              </q-card-section>
+            </div>
+          </q-slide-transition>
+        </q-card>
+      </q-expansion-item>
+    </div>
+
     <q-ajax-bar
       ref="bar"
       position="bottom"
@@ -88,19 +78,16 @@ import { ref, onMounted } from 'vue'
 import NodeForm from 'src/components/NodeForm.vue'
 import { useThoughtStore } from 'src/stores/thoughts'
 import { storeToRefs } from 'pinia'
+
+
 const store = useThoughtStore()
-const {
-  crumbTrail,
-  selectedNode,
-  strSelectedNode,
-  thoughts,
-  selectedText
-} = storeToRefs( store )
+const { crumbTrail, selectedNode, strSelectedNode, thoughts, selectedText, isNodeSelected } = storeToRefs( store )
 const bar = ref( null )
 const srcData = []
 const apiV1 = 'http://localhost:3001/0'
-const currentNode = ref({})
-let expanded = true
+const currentNode = ref( {} )
+const expanded = ref( false )
+
 const refresh = async () => {
   const barRef = bar.value
   barRef.start()
@@ -112,10 +99,8 @@ const onNodeSelect = () => {
   currentNode.value = store.getCurrentNode()
 }
 
-
 onMounted( () => refresh() )
 </script>
-
 
 <style scoped>
 pre {

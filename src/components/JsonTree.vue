@@ -38,15 +38,11 @@
         </q-card-actions>
         <q-card-section>
           <q-list bordered>
-           <TreeDetail :formData="selectedNode"/>
+           <TreeDetail :formData="selectedNode" :edit="edit"/>
           </q-list>
-          <!-- {{ store.crumbTrail }}
         </q-card-section>
-        <q-card-section class="text-h3">
-          {{ store.selectedText }}
-        </q-card-section>
-        <q-card-section>
-          <pre>{{ store.selectedNode }}</pre>-->
+        <q-card-section v-if="edit">
+        <NodeForm :formData="selectedNode" />
         </q-card-section> 
       </q-card>
     </template>
@@ -59,10 +55,12 @@
 <script setup>
 import JsonNode from './JsonNode.vue';
 import TreeDetail from './TreeDetail.vue';
+import NodeForm from './NodeForm.vue'
 import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useThoughtStore } from 'stores/thoughts'
 
+const edit = ref(false)
 const splitterModel = ref( 50 )
 const store = useThoughtStore()
 const { thoughts, isNodeSelected, selectedNode } = storeToRefs( store )
