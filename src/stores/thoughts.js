@@ -22,11 +22,11 @@ export const useThoughtStore = defineStore( 'thoughtStore', {
     ],
   } ),
   getters: {
-    crumbTrail ( { selectedNode, selectedText, crumbs } ) {
-      if ( selectedNode && selectedText ) {
-        crumbs = this.getLabelPath([this.thoughts],this.selectedText)
-      }
-      return _.join( crumbs, ' > ' )
+    hasCrumbs () {
+      return this.crumbs.length > 0
+    },
+    crumbTrail ( ) {
+      return _.join( this.crumbs, ' > ' )
     },
     selectedKeys ( { isNodeSelected, selectedNode } ) {
       var keys = []
@@ -57,9 +57,8 @@ export const useThoughtStore = defineStore( 'thoughtStore', {
       return versions
     },
     isNodeSelected () {
-      return ( ![null, ''].includes( this.selectedText ) )     // return this.selectedNode !== null && !this.isEmptyObject( this.selectedNode )
+      return ( ![null, ''].includes( this.selectedText ) )   
     },
-
     lastId ( { thoughts, nextId } ) {
       try {
         // get all ids
@@ -77,6 +76,12 @@ export const useThoughtStore = defineStore( 'thoughtStore', {
     },
   },
   actions: {
+    setSelected ( refTree, key ) {
+      this.selectedText = key
+      this.crumbs = this.getLabelPath( [this.thoughts], this.selectedText )
+      this.selectedNode = refTree.value?.getNodeByKey( key )
+      refTree.value?.setExpanded(key, true)
+    },
     getLabelPath ( tree, targetLabel ) {
       let result = []
 
@@ -94,83 +99,8 @@ export const useThoughtStore = defineStore( 'thoughtStore', {
       traverse( tree, [] )
       return result
     },
-    getBreadcrumbTrail ( tree = [this.thoughts], targetLabel = this.selectedText ) {
-      let trail = [];
-
-      const found = _.transform( tree, ( result, node ) => {
-        if ( result.found ) return; // Stop if found
-
-        // if ( node === targetLabel ) node = tree
-        // Add current node to trail
-        trail.push( node.label );
-
-        // Check if this node is the target
-        if ( node.label === targetLabel ) {
-          result.found = true;
-          return;
-        }
-
-        // Recurse into children
-        if ( _.isArray( node.children ) ) {
-          const subTrail = this.getBreadcrumbTrail( node.children, targetLabel );
-          if ( !_.isEmpty( subTrail ) ) {
-            trail = [...trail.slice( 0, trail.length - 1 ), ...subTrail];
-            result.found = true;
-          }
-        }
-
-        // Not found here, backtrack
-        if ( !result.found ) trail.pop();
-      }, { found: false } );
-
-      return found.found ? trail : [];
-    },
-    getBreadcrumbPath ( tree = this.thoughts, targetLabel = this.selectedText, path = [] ) {
-      if ( !tree || !targetLabel ) return
-      for ( let node in tree ) {
-        if ( node == 'label' ) node = tree
-        const newPath = [...path, node.label]
-
-        if ( node.label === targetLabel ) {
-          return newPath
-        }
-
-        if ( _.has( node, 'children' ) ) {
-          const result = this.getBreadcrumbPath( node.children, targetLabel, newPath )
-          if ( result ) return result
-        }
-      }
-    },
-    findBreadcrumbPath ( obj = this.selectedNode, targetId, path = [] ) {
-      debugger
-      if ( !this.selectedNode ) return null
-
-      for ( const key in obj ) {
-        if ( typeof obj[key] === 'object' && obj[key] !== null ) {
-          // If it's a matching node
-          if ( obj[key].id === targetId ) {
-            return [...path, key] // Return the path including this node
-          }
-          // Search recursively
-          const result = this.findBreadcrumbPath( obj[key], targetId, [...path, key] )
-          if ( result ) return result
-        }
-      }
-      return null // Node not found
-    },
     isEmptyObject ( obj ) {
       return JSON.stringify( obj ) === '{}'
-    },
-    getCurrentNode ( obj ) {
-      // if no node sent find node by selected text in tree
-      if ( !obj?.nodeValue ) {
-        this.setSelectedNode( this.selectedText )
-      }
-      // set state of selectedText and node if available
-      if ( obj?.nodeKey && obj?.nodeKey != this.selectedText ) {
-        this.selectedText = obj.nodeKey
-      }
-      if ( obj?.nodeValue ) this.selectedNode = obj.nodeValue
     },
     queryData () {
       //query data using jsonpath
@@ -195,28 +125,6 @@ export const useThoughtStore = defineStore( 'thoughtStore', {
         this.error = err
       }
       this.loading = false
-    },
-    setCrumbString ( selected ) {
-      // use currently selected label to create crumb trail
-      this.crumbs = this.getBreadcrumbPath( this.thoughts, selected, [] )
-      console.log( `Current Crumbs: ${this.crumbs}` )
-    },
-    setSelectedNode () {
-      if ( this.selectedText )
-        this.selectedNode = this.getNodeFromLabel( this.thoughts, this.selectedText )
-    },
-    getNodeFromLabel ( obj, value ) {
-      if ( typeof obj !== 'object' || obj === null ) return null
-      for ( let key in obj ) {
-        if ( obj[key] === value ) {
-          return obj
-        }
-        if ( typeof obj[key] === 'object' ) {
-          let result = this.getNodeFromLabel( obj[key], value )
-          if ( result ) return result
-        }
-      }
-      return null
     },
     updateNodeById ( idToUpdate = this.selectedNode?.id, tree = this.thoughts, newData = this.selectedNode ) {
       for ( const node of tree ) {

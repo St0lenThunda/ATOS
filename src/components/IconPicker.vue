@@ -6,7 +6,7 @@
     anchor="bottom left"
     self="top left"
   >
-    <q-card >
+    <q-card>
       <q-card-section class="q-pa-sm">
         <q-input
           dense
@@ -19,18 +19,23 @@
         />
 
         <div class="row q-gutter-sm justify-start">
-          <q-btn
+          <template
             v-for=" icon in filteredIcons "
             :key="icon"
-            round
-            flat
-            size="md"
-            align="evenly"
-            :icon="icon"
-            :label="icon"
-            @click="selectIcon( icon )"
-            :color="modelValue === icon ? 'primary' : 'grey-7'"
-          />
+          >
+
+            <q-btn
+              round
+              flat
+              size="md"
+              align="evenly"
+              :icon="icon"
+              @click="selectIcon( icon )"
+              :color="modelValue === icon ? 'primary' : 'grey-7'"
+            >
+              <q-tooltip class="text-capitalize text-body2 shadow-4"> {{ icon.split('_').join(' ') }}</q-tooltip>
+            </q-btn>
+          </template>
         </div>
       </q-card-section>
     </q-card>

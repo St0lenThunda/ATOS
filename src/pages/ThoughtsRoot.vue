@@ -1,7 +1,23 @@
 <template>
-  <q-page class="q-pa-xl row">
-
+  <q-toolbar q-if="store.hasCrumbs" inset>
+    <q-breadcrumbs
+      active-color="grey"
+      style="font-size: 16px"
+      class="text-body text-primary text-weight-bolder text-uppercase"
+      separator=" > "
+    >
+      <q-breadcrumbs-el
+        v-for="crumb in crumbs"
+        :key="crumb"
+        :label="crumb"
+        class="cursor-pointer"
+        @click="pickLeaf(crumb)"
+      />
+    </q-breadcrumbs>
+  </q-toolbar>
+  <div class="q-pa-xl row">
     <q-tree
+      ref="treeRef"
       q-if="thoughts"
       class="col-4 q-pa-md"
       :nodes="[thoughts]"
@@ -11,66 +27,48 @@
       @update:selected="onNodeSelect"
       accordion
     />
-    <div class="column col-8">
-      <q-banner class="text-center">
-        <span class='q-pa-md text-uppercase bg-orange text-white text-weight-bolder'>
-          <q-avatar
-            icon="cookie"
-            v-show="crumbTrail != ''"
-          />
-          {{ crumbTrail }}
-        </span>
-      </q-banner>
-      <q-expansion-item
-        popup
-        expand-separator
-        v-show="isNodeSelected"
-        :icon="selectedNode.icon || 'help'"
-        :label="selectedNode.label"
-        :caption="selectedNode.text"
-        expand-icon="edit"
-        expanded-icon="close"
-      >
-        <q-card
-          class="shadow-8 "
-          bordered
+    <div class="col-8" v-show="isNodeSelected">
+      <q-list dense>
+        <q-expansion-item
+          expand-separator
+          :icon="selectedNode.icon || 'help'"
+          :label="selectedNode.label"
+          :caption="selectedNode.text"
+          expand-icon="edit"
+          expanded-icon="close"
         >
-          <q-card-section class="column">
-            <node-form :formData="selectedNode"></node-form>
-          </q-card-section>
-          <q-card-actions>
-            <q-space />
-  
-            <q-btn
-              color="grey"
-              round
-              flat
-              dense
-              :label="expanded ? 'Hide JSON' : 'Show JSON'"
-              :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-              @click="expanded = !expanded"
-            />
-          </q-card-actions>
-          <q-slide-transition>
-            <div v-show="expanded">
-              <q-separator />
-              <q-card-section class="text-subtitle2">
-                <pre id="json-display"> {{ strSelectedNode }}</pre>
-              </q-card-section>
-            </div>
-          </q-slide-transition>
-        </q-card>
-      </q-expansion-item>
+          <q-card class="shadow-8" bordered>
+            <q-card-section class="column">
+              <node-form :formData="selectedNode"></node-form>
+            </q-card-section>
+            <q-card-actions>
+              <q-space />
+
+              <q-btn
+                color="grey"
+                round
+                flat
+                dense
+                :label="expanded ? 'Hide JSON' : 'Show JSON'"
+                :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+                @click="expanded = !expanded"
+              />
+            </q-card-actions>
+            <q-slide-transition>
+              <div v-show="expanded">
+                <q-separator />
+                <q-card-section class="text-subtitle2">
+                  <pre id="json-display"> {{ strSelectedNode }}</pre>
+                </q-card-section>
+              </div>
+            </q-slide-transition>
+          </q-card>
+        </q-expansion-item>
+      </q-list>
     </div>
 
-    <q-ajax-bar
-      ref="bar"
-      position="bottom"
-      color="secondary"
-      size="10px"
-      skip-hijack
-    />
-  </q-page>
+    <q-ajax-bar ref="bar" position="bottom" color="secondary" size="10px" skip-hijack />
+  </div>
 </template>
 
 <script setup>
@@ -79,27 +77,31 @@ import NodeForm from 'src/components/NodeForm.vue'
 import { useThoughtStore } from 'src/stores/thoughts'
 import { storeToRefs } from 'pinia'
 
-
 const store = useThoughtStore()
-const { crumbTrail, selectedNode, strSelectedNode, thoughts, selectedText, isNodeSelected } = storeToRefs( store )
-const bar = ref( null )
+const { crumbs, selectedNode, strSelectedNode, thoughts, selectedText, isNodeSelected } =
+  storeToRefs(store)
+const bar = ref(null)
 const srcData = []
 const apiV1 = 'http://localhost:3001/0'
-const currentNode = ref( {} )
-const expanded = ref( false )
+const treeRef = ref(null)
+const expanded = ref(false)
 
+const pickLeaf = (leaf) => {
+  treeRef.value?.collapseAll()
+  store.setSelected(treeRef, leaf)
+}
 const refresh = async () => {
   const barRef = bar.value
   barRef.start()
-  srcData.value = await store.getThoughts( apiV1 )
+  srcData.value = await store.getThoughts(apiV1)
   barRef.stop()
 }
 
-const onNodeSelect = () => {
-  currentNode.value = store.getCurrentNode()
+const onNodeSelect = (key) => {
+  store.setSelected(treeRef, key)
 }
 
-onMounted( () => refresh() )
+onMounted(() => refresh())
 </script>
 
 <style scoped>
