@@ -78,9 +78,16 @@ export const useThoughtStore = defineStore( 'thoughtStore', {
   actions: {
     setSelected ( refTree, key ) {
       this.selectedText = key
-      this.crumbs = this.getLabelPath( [this.thoughts], this.selectedText )
+      
+      if ( !_.isNull(key )) {
+         this.crumbs = this.getLabelPath( [this.thoughts], this.selectedText )
       this.selectedNode = refTree.value?.getNodeByKey( key )
       refTree.value?.setExpanded(key, true)
+      } else {
+        this.crumbs = []
+        this.selectedNode = key
+      }
+     
     },
     getLabelPath ( tree, targetLabel ) {
       let result = []

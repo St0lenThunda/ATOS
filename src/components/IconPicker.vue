@@ -18,7 +18,8 @@
           debounce="200"
         />
 
-        <div class="row q-gutter-sm justify-start">
+        <div class="row q-gutter-sm justify-center">
+          
           <template
             v-for=" icon in filteredIcons "
             :key="icon"
@@ -52,7 +53,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-// import iconsObj from 'src/assets/material-icons.json'
+import iconsObj from 'src/assets/material-icons.json'
 
 defineProps( {
   modelValue: String
@@ -62,11 +63,11 @@ const emit = defineEmits( ['update:modelValue'] )
 const menu = ref( false )
 const search = ref( '' )
 
-const icons = [
-  'home', 'person', 'shopping_cart', 'star', 'favorite',
-  'settings', 'delete', 'info', 'help', 'lock'
-]
-// const icons = iconsObj.icons.map(item=>item.name)
+// const icons = [
+//   'home', 'person', 'shopping_cart', 'star', 'favorite',
+//   'settings', 'delete', 'info', 'help', 'lock'
+// ]
+const icons = iconsObj.icons.map(item=>item.name)
 
 const filteredIcons = computed( () => {
   if ( !search.value ) return icons
