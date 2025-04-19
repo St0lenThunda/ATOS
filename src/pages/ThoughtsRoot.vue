@@ -48,22 +48,19 @@
               <q-item-label>
                 {{ prop.node.label }}
               </q-item-label>
-              <q-menu context-menu>
-                <q-list style="min-width: 100px">
-                  <q-item clickable v-close-popup>
-                    <q-item-section>Add Child</q-item-section>
-                  </q-item>
-                  <!-- <q-separator />
-                  <q-item clickable v-close-popup>
-                    <q-item-section>New incognito tab</q-item-section>
-                  </q-item> -->
-                </q-list>
-              </q-menu>
+
             </q-item-section>
-           <q-item-section v-if="prop.node.isFaf">
-            <q-icon name="heart" />
-           </q-item-section>
+            <q-item-section
+              v-if=" prop.node.isFav "
+              top
+              side
+            >
+              <q-icon name="heart" />
+            </q-item-section>
           </q-item>
+          <template v-if=" isNodeSelected ">
+            <NodeMenu v-model="addNode" />
+          </template>
         </template>
       </q-tree>
     </template>
@@ -94,7 +91,12 @@
               bordered
             >
               <q-card-section class="column">
-                <node-form :formData="selectedNode"></node-form>
+                <AddNodeDialog :update="true">
+                  <template #header>
+                    Update Node
+                  </template>
+                </AddNodeDialog>
+                <NodeForm :formData="selectedNode" />
               </q-card-section>
               <q-card-actions>
                 <q-space />
@@ -123,8 +125,6 @@
       </div>
     </template>
   </q-splitter>
-  <!-- <div class="q-pa-xl row"> -->
-
   <q-ajax-bar
     ref="bar"
     position="bottom"
@@ -132,7 +132,11 @@
     size="10px"
     skip-hijack
   />
-  <!-- </div> -->
+  <AddNodeDialog v-model="addNode">
+    <template #header>
+      Add Node
+    </template>
+  </AddNodeDialog>
 </template>
 
 <script setup>
@@ -140,7 +144,10 @@ import { ref, onMounted } from 'vue'
 import NodeForm from 'src/components/NodeForm.vue'
 import { useThoughtStore } from 'src/stores/thoughts'
 import { storeToRefs } from 'pinia'
+import AddNodeDialog from 'src/components/AddNodeDialog.vue'
+import NodeMenu from 'src/components/NodeMenu.vue'
 
+const addNode = ref( false )
 const store = useThoughtStore()
 const { crumbs, selectedNode, strSelectedNode, thoughts, selectedText, isNodeSelected } =
   storeToRefs( store )

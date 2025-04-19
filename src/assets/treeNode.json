@@ -1,0 +1,87 @@
+{
+  "label": {
+    "type": "String",
+    "default": "",
+    "description": "Node's label"
+  },
+  "icon" :{
+    "type":"String",
+    "default":"",
+    "description": "Node's icon"
+  },
+  "iconColor": {
+    "type":"String",
+    "default": "",
+    "description": "Node's icon color"
+  },
+  "img": {
+    "type":"String",
+    "default": "",
+    "description":"Node's image. Use /public folder"
+  },
+  "avatar":{
+    "type":"String",
+    "default": "",
+    "description":"Node's avatar. Use /public folder"
+  },
+  "children":{
+    "type":"Array",
+    "default": [],
+    "description":"Array of child nodes"
+  },
+  "disabled":{
+    "type":"Boolean",
+    "default": false,
+    "description":"Disabled?"
+  },
+  "expandable":{
+    "type":"Boolean",
+    "default": false,
+    "description":"Expandable?"
+  },
+  "selectable":{
+    "type":"Boolean",
+    "default": true,
+    "description":"Selectable?"
+  },
+  "handler":{
+    "type":"Function",
+    "default": null,
+    "description":"Custom function that should be called on click on node. Recieve <code>node</code> as parameter"
+  },
+  "tickable":{
+    "type":"Boolean",
+    "default":false,
+    "description":"Tickable?"
+  },
+  "noTick": {
+    "type":"Boolean",
+    "default":false,
+    "description": "When using tick strategy, should node display checkbox?"
+  },
+  "tickStrategy":{
+    "type":"String",
+    "default": "",
+    "description":"Override global tick strategy for this node only"
+  },
+  "lazy":{
+    "type":"Boolean",
+    "default": false,
+    "description":"Should children be lazy loaded? In this case also don't specify 'children' prop"
+  } ,
+  "header":{
+    "type":"String",
+    "default": "",
+    "description":"Node header scoped slot name, w/o the required 'header-' prefix. Ex 'story' refers to 'header-story' scoped slot"
+  },
+  "body":{
+    "type":"String",
+    "default": "",
+    "description":"Node body scoped slot name, w/o the required 'body-' prefix. Ex 'story' refers to 'body-story' scoped slot"
+  },
+  "isFav":{
+    "type":"Boolean",
+    "default": false,
+    "description": "Is Favorite"
+  }
+}

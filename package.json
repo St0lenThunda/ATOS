@@ -8,7 +8,7 @@
   "private": true,
   "scripts": {
     "start": "concurrently \"yarn run server\" \"yarn run server2 \" \"yarn run server3 \" \"npm run dev\"",
-    "server": "json-server -w ./backend/data2.json",
+    "server": "json-server -w ./src/assets/material-icons.json",
     "server2": "json-server -w -p 3001 ./backend/data.json",
     "server3": "json-server -w -p 3002 ./backend/data3.json",
     "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{js,cjs,mjs,vue}\"",

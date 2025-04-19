@@ -13,9 +13,8 @@
     >
       <icon-picker v-model="formData['icon']" />
     </q-card-section>
-    <q-item-section></q-item-section>
     <q-card-section
-      v-for=" key in Object.keys( formData ) "
+      v-for=" key in nodeKeys "
       :key="key"
     >
 
@@ -66,7 +65,7 @@ import IconPicker from 'src/components/IconPicker.vue'
 
 const store = useThoughtStore()
 
-const fieldType = ( field ) => typeof field 
+const fieldType = ( field ) => typeof field
 const props = defineProps({
   formData: {
     type: Object,
@@ -74,5 +73,6 @@ const props = defineProps({
   },
 })
 
-const { formData } = toRefs(props)
+const { formData } = toRefs( props )
+const nodeKeys = Object.keys(formData)
 </script>

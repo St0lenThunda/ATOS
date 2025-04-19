@@ -96,7 +96,7 @@ export default defineConfig((ctx) => {
       open: true, // opens browser wind'ow automatically
       proxy: {
         '/api': {
-          target: 'http://localhost:3000/api/data/',
+          target: 'http://localhost:3000/',
           changeOrigin: false,
           ws: true,
           prewrite: (path) => path.replace(/^\/api/, ''),
@@ -125,7 +125,11 @@ export default defineConfig((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: [
+        "LocalStorage",
+        "SessionStorage",
+        "Notify"
+      ],
     },
 
     // animations: 'all', // --- includes all animations
