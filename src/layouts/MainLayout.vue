@@ -71,23 +71,23 @@ const linksList = [
     link: '/',
   },
   {
-    title: 'Thoughts',
-    caption: 'Root of Thoughts',
-    icon: 'psychology',
-    link: 'thoughts',
-  },
-  {
     title: 'API Viewer',
     caption: 'Raw JSON Data Viewer',
     icon: 'data_object',
     link: 'api',
   },
   {
-    title: 'JsonTree Component',
-    caption: 'Beta',
-    icon: 'account_tree',
-    link: 'beta2',
+    title: 'Thoughts',
+    caption: 'Root of Thoughts',
+    icon: 'psychology',
+    link: 'thoughts',
   },
+  // {
+  //   title: 'JsonTree Component',
+  //   caption: 'Beta',
+  //   icon: 'account_tree',
+  //   link: 'beta2',
+  // },
 ]
 
 const leftDrawerOpen = ref(false)

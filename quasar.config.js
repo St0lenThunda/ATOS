@@ -128,7 +128,8 @@ export default defineConfig((ctx) => {
       plugins: [
         "LocalStorage",
         "SessionStorage",
-        "Notify"
+        "Notify",
+        "Dialog"
       ],
     },
 

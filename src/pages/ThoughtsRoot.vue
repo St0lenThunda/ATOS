@@ -51,16 +51,14 @@
 
             </q-item-section>
             <q-item-section
-              v-if=" prop.node.isFav "
+            
               top
               side
             >
-              <q-icon name="heart" />
+              <q-icon v-if="prop.node.isFav" :name="favorite" color='red' />
             </q-item-section>
           </q-item>
-          <template v-if=" isNodeSelected ">
-            <NodeMenu v-model="addNode" />
-          </template>
+          <NodeMenu v-model="isNodeSelected" />
         </template>
       </q-tree>
     </template>
@@ -91,12 +89,12 @@
               bordered
             >
               <q-card-section class="column">
-                <AddNodeDialog :update="true">
+                <AddNodeDialog :update="isNodeSelected">
                   <template #header>
                     Update Node
                   </template>
                 </AddNodeDialog>
-                <NodeForm :formData="selectedNode" />
+                <!-- <NodeForm :formData="selectedNode" /> -->
               </q-card-section>
               <q-card-actions>
                 <q-space />
@@ -132,22 +130,16 @@
     size="10px"
     skip-hijack
   />
-  <AddNodeDialog v-model="addNode">
-    <template #header>
-      Add Node
-    </template>
-  </AddNodeDialog>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import NodeForm from 'src/components/NodeForm.vue'
+// import NodeForm from 'src/components/NodeForm.vue'
 import { useThoughtStore } from 'src/stores/thoughts'
 import { storeToRefs } from 'pinia'
 import AddNodeDialog from 'src/components/AddNodeDialog.vue'
 import NodeMenu from 'src/components/NodeMenu.vue'
 
-const addNode = ref( false )
 const store = useThoughtStore()
 const { crumbs, selectedNode, strSelectedNode, thoughts, selectedText, isNodeSelected } =
   storeToRefs( store )
