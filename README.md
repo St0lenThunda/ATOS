@@ -8,8 +8,9 @@
     - [Format the files](#format-the-files)
     - [Build the app for production](#build-the-app-for-production)
     - [Customize the configuration](#customize-the-configuration)
-  - [Todos:](#todos)
-    - [by file](#by-file)
+  - [Dev Goals](#dev-goals)
+    - [Todos:](#todos)
+      - [by file](#by-file)
     - [other todos](#other-todos)
   - [AI Suggestions](#ai-suggestions)
     - [UI Enhancements](#ui-enhancements)
@@ -91,12 +92,12 @@ See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-
 
   </details>
 
-  
+## Dev Goals
 <details>
   <summary> In Process Dev Goals</summary>
   
-  ## Todos:
-### by file
+### Todos:
+#### by file
 - NodeModelEditor.vue
   - [ ] assess the need for notification on page
   - [ ] Styling ( two column layout)
