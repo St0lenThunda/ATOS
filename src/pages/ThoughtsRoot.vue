@@ -51,29 +51,29 @@
 
             </q-item-section>
             <q-item-section
-            
+
               top
               side
             >
-              <q-icon v-if="prop.node.isFav" :name="favorite" color='red' />
+              <q-icon v-if="prop.node.isFav" name="favorite" color='red' />
             </q-item-section>
           </q-item>
-          <NodeMenu v-model="isNodeSelected" />
+          <NodeMenu v-model="isNodeSelected" @ShowEdit="showEditor = !showEditor" />
         </template>
       </q-tree>
     </template>
-    <template v-slot:separator>
+    <template v-slot:separator v-if="showEditor">
       <q-avatar
         color="primary"
         text-color="white"
         size="40px"
         icon="drag_indicator"
+         v-if="showEditor"
       />
     </template>
-    <template v-slot:after>
+    <template v-slot:after  v-if="showEditor">
       <div
         class="col-8"
-        v-if=" isNodeSelected "
       >
         <q-list dense>
           <q-expansion-item
@@ -88,13 +88,13 @@
               class="shadow-8"
               bordered
             >
-              <q-card-section class="column">
-                <AddNodeDialog :update="isNodeSelected">
+              <q-card-section>
+                <NodeModelEditor >
                   <template #header>
                     Update Node
                   </template>
-                </AddNodeDialog>
-                <!-- <NodeForm :formData="selectedNode" /> -->
+                </NodeModelEditor>
+                <NodeForm  />
               </q-card-section>
               <q-card-actions>
                 <q-space />
@@ -134,10 +134,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-// import NodeForm from 'src/components/NodeForm.vue'
+import NodeForm from 'src/components/NodeForm.vue'
 import { useThoughtStore } from 'src/stores/thoughts'
 import { storeToRefs } from 'pinia'
-import AddNodeDialog from 'src/components/AddNodeDialog.vue'
+import  NodeModelEditor  from "src/components/NodeModelEditor.vue";
 import NodeMenu from 'src/components/NodeMenu.vue'
 
 const store = useThoughtStore()
@@ -147,9 +147,9 @@ const bar = ref( null )
 const srcData = []
 const apiV1 = 'http://localhost:3001/0'
 const treeRef = ref( null )
-const expanded = ref( false )
+const expanded = ref( true )
 const splitterModel = ref( 95 )
-
+const showEditor = ref(false)
 const pickLeaf = (leaf) => {
   treeRef.value?.collapseAll()
   store.setSelected(treeRef, leaf)
@@ -164,7 +164,7 @@ const refresh = async () => {
 const onNodeSelect = (key) => {
   store.setSelected(treeRef, key)
 
-  splitterModel.value = key ? 50 : 95
+  splitterModel.value = key ? 30 : 95
 }
 
 onMounted(() => refresh())

@@ -1,8 +1,6 @@
 <template>
-  <div
-    class="bg-secondary text-white q-pa-md"
-    style="max-width: 600px"
-  >
+  <div class="bg-secondary text-white q-pa-md">
+    <!-- style="max-width: 600px" -->
     <div
       ref="form"
       class="text-white row q-gutter-md q-pa-md"
@@ -11,7 +9,7 @@
         <slot name="header">{{ headerText }} </slot>
       </span>
 
-      <div class="row">
+      <div>
         <template
           v-for=" ( model, modelKey ) in NodeModel "
           :key="modelKey"
@@ -153,12 +151,22 @@
           </div>
         </template>
       </div>
-
+  <!-- <div q-if="store.nodeHasChildren">
+        
+          <span class="text-center text-orange text-subtitle1 text-weight-bolder q-pa-md">Children</span>
+          <q-tree
+            :nodes="store.getNodeChildren"
+            node-key="label"
+            dense
+            accordion
+          />
+         </div> -->
       <div>
         <q-btn
           label="Submit"
           @click="onSubmit"
           color="primary"
+          v-close-popup
         />
         <q-btn
           bordered
@@ -178,14 +186,14 @@
 // TODO: assess the need for notification on page
 // TODO: solidify form validation
 import { useQuasar } from 'quasar'
-
+import _ from 'lodash'
 import { ref, onMounted } from 'vue'
 import { useThoughtStore } from 'src/stores/thoughts'
 import NodeModel from 'src/assets/treeNode.json'
 import IconPicker from 'src/components/IconPicker.vue'
 const $q = useQuasar()
 const form = ref( null )
-var dataRefs = {
+let dataRefs = {
   label: ref( '' ),
   icon: ref( '' ),
   iconColor: ref( '' ),
@@ -218,19 +226,36 @@ const emit = defineEmits( ['done'] )
 const store = useThoughtStore()
 
 const setDefaults = () => {
-  // we need to set the dataRefs to the selected node
-  // and set the form to the selected node
-  const source = ( update ) ? store.selectedNode : NodeModel
-  dataRefs = Object.assign( dataRefs, source );
+  
+  if ( update ) {
+    // if updating set the form to the selected node
+    dataRefs = Object.assign( dataRefs, store.selectedNode );
+  } else {
+    // we need to set the dataRefs to the NodeModel defaults
+    const treeNodeDefaults = getTreeNodeDefaults(NodeModel)
+ Object.keys(dataRefs).forEach(key => {
+  dataRefs[key] = ref(treeNodeDefaults[key])
+ });
+  }
+
+}
+/**
+ * Extracts all keys from the treeNode JSON and maps them to their default values.
+ * @param {Object} nodeSchema - The JSON schema for the tree node.
+ * @returns {Object} - An object with keys as property names and values as their defaults.
+ */
+const getTreeNodeDefaults = ( nodeSchema ) => {
+  // Use _.mapValues to iterate over the object and extract the "default" value for each key
+  return _.mapValues( nodeSchema, ( value ) => _.get( value, 'default', null ) );
 }
 
 onMounted( () => {
   setDefaults()
 } )
 
-const closeDialog = () => {
-  emit( 'done', true )
-}
+// const closeDialog = () => {
+
+// }
 
 const onSubmit = ( evt ) => {
   evt.preventDefault()
@@ -240,7 +265,7 @@ const onSubmit = ( evt ) => {
   }
   store.addNode( refsToData() )
   resetForm()
-  closeDialog()
+  emit( 'done', true )
 }
 
 const refsToData = () => {

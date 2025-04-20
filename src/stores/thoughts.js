@@ -32,15 +32,21 @@ export const useThoughtStore = defineStore('thoughtStore', {
       return _.join(this.crumbs, ' > ')
     },
     nodeHasChildren ( { selectedNode } ) {
-      return !_.isEmpty( selectedNode.children )
+      return !_.isEmpty( selectedNode?.children )
     },
-    selectedKeys({ isNodeSelected, selectedNode }) {
+    getNodeChildren({selectedNode}){
+      return selectedNode?.children
+    },
+    getFilteredNodeKeys({ isNodeSelected, selectedNode }) {
       var keys = []
       if (isNodeSelected) {
         keys = Object.keys(selectedNode?.value?.nodeValue)
         keys = keys.filter((v) => !['id', 'text', 'icon', 'children', 'title'].includes(v))
       }
       return keys
+    },
+    getNodeKeys({selectedNode}){
+return Object.keys(selectedNode)
     },
     currentApiVersion({ urls }) {
       return urls.length
@@ -73,7 +79,7 @@ export const useThoughtStore = defineStore('thoughtStore', {
     strSelectedNode() {
       return this.isNodeSelected ? JSON.stringify(this.selectedNode, null, 2) : '{}'
     },
-    strThoughts () {  
+    strThoughts () {
       return this.isEmptyObject(this.thoughts) ? '{}' : JSON.stringify(this.thoughts, null, 2)
     }
   },
@@ -87,10 +93,8 @@ export const useThoughtStore = defineStore('thoughtStore', {
 
       // add id to new node data
       node = Object.assign({id: this.nextID}, node)
-      debugger
       // short term storage
      this.selectedNode.children.push(node)
-      debugger
       this.updateNodeById(this.selectedNode.id)
 
 
@@ -158,7 +162,9 @@ export const useThoughtStore = defineStore('thoughtStore', {
           const res = await fetch(url)
           const data = await res.json()
           this.thoughts = data
-          Notify.create(`Data loaded from src: ${url} `)
+          Notify.create( `Data loaded from src: ${url} ` )
+          // LocalStorage.setItem('thoughts', this.thoughts)
+          // Notify.create( `Data saved locally ` )
         } catch (err) {
           this.error = err
         }
@@ -171,11 +177,11 @@ export const useThoughtStore = defineStore('thoughtStore', {
       newData = this.selectedNode,
       tree = [this.thoughts],
     ) {
-      
-     
+
+
       for (const node of tree) {
         if ( node.id === idToUpdate ) {
-          
+
           // create a new object with the updated data
           // and assign it to the node overwriting the id if one exists
           node.value = Object.assign( node, newData )
@@ -186,8 +192,7 @@ export const useThoughtStore = defineStore('thoughtStore', {
             message: 'Node updated successfully',
           } )
           // Save the updated thoughts to local storage
-          LocalStorage.setItem( 'thoughts', this.thoughts )   
-
+          LocalStorage.setItem( 'thoughts', this.thoughts )
           return true // updated
         }
 
@@ -218,12 +223,12 @@ export const useThoughtStore = defineStore('thoughtStore', {
           .value(); // End the chain and return the processed array
       }
 
-      this.thoughts = traverse( [this.thoughts] ) // Update the thoughts with the filtered tree
+      this.thoughts = traverse( [this.thoughts] )[0] // Update the thoughts with the filtered tree
       this.selectedNode = {} // Clear the selected node
       this.selectedText = '' // Clear the selected text
       this.crumbs = [] // Clear the crumbs
       this.dirty = true // Mark the store as dirty
-      
+
 
       // Save the updated thoughts to local storage
       LocalStorage.setItem( 'thoughts', this.thoughts ) // Save the updated thoughts to local storage

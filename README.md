@@ -23,9 +23,7 @@
   - [Overall Suggestions](#overall-suggestions)
     - [Issues and Suggestions:](#issues-and-suggestions)
       - [1. **Error Handling in `getApiData`**:](#1-error-handling-in-getapidata)
-      - [2. **Unused Variables**:](#2-unused-variables)
       - [3. **`onChange` Function**:](#3-onchange-function)
-      - [4. **`srcJSON` Computed Property**:](#4-srcjson-computed-property)
       - [5. **Hardcoded Strings**:](#5-hardcoded-strings)
       - [6. **Performance Optimization**:](#6-performance-optimization)
       - [7. **JSONEditor.vue Props Filtering**:](#7-jsoneditorvue-props-filtering)
@@ -101,7 +99,7 @@ See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-
 - NodeModelEditor.vue
   - [ ] assess the need for notification on page
   - [ ] Styling ( two column layout)
-  - [ ] ***Save with ID***
+  - [x] ***Save with ID***
    
 - ApiViewer.vue
   - [ ] is the subscript operator, which you use to denote a child element of the current element (by name or index).
@@ -175,24 +173,6 @@ Use TypeScript or JSDoc comments to define types for better maintainability.
 
 ---
 
-#### 2. **Unused Variables**:
-   - The `queryBasics` variable is used for the dialog but is not toggled properly in the code.
-   - **Suggestion**: Ensure `queryBasics` is toggled correctly when the help button is clicked.
-
-   ```javascript
-   const queryBasics = ref(false);
-
-   const toggleQueryBasics = () => {
-     queryBasics.value = !queryBasics.value;
-   };
-   ```
-
-   Update the button's `@click` handler:
-   ```html
-   <q-btn icon="question_mark" @click="toggleQueryBasics" />
-   ```
-
----
 
 #### 3. **`onChange` Function**:
    - The `onChange` function uses `this.content`, which is not defined in the `script setup` context.
@@ -203,16 +183,6 @@ Use TypeScript or JSDoc comments to define types for better maintainability.
      console.log('onChange', content);
      // Handle content changes here
    };
-   ```
-
----
-
-#### 4. **`srcJSON` Computed Property**:
-   - The `srcJSON` computed property uses `Object.assign` unnecessarily.
-   - **Suggestion**: Simplify the computed property.
-
-   ```javascript
-   const srcJSON = computed(() => ({ text: thoughtStore.strThoughts }));
    ```
 
 ---
@@ -247,29 +217,15 @@ Use TypeScript or JSDoc comments to define types for better maintainability.
 
 #### 8. **CSS Improvements**:
    - The `pre` styles in ApiViewer.vue could use a more modern approach for responsiveness.
-   - **Suggestion**: Use `max-height` and `overflow-y: auto` for better scrolling behavior.
-
-   ```css
-   pre {
-     background-color: #f4f4f4;
-     padding: 10px;
-     border: 1px solid #ddd;
-     border-radius: 5px;
-     max-height: 300px;
-     overflow-y: auto;
-   }
-   ```
-
+  
 ---
 
 ### Additional Suggestions:
-1. **Validation for `queryPath`**:
-   - Add validation to ensure the `queryPath` input is a valid JSONPath expression before querying.
 
-2. **Unit Tests**:
+1. **Unit Tests**:
    - Add unit tests for critical functions like `getApiData` and `queryJSONPath` to ensure reliability.
 
-3. **Accessibility**:
+2. **Accessibility**:
    - Ensure all interactive elements (e.g., buttons, toggles) are accessible with proper ARIA attributes.
 
 ---

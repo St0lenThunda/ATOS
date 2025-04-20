@@ -1,20 +1,27 @@
 <template>
   <q-menu context-menu>
-    <q-list style="min-width: 100px">
-      <q-item
+    <q-list style="min-width: 150px">
+      <!-- <q-item
         clickable
         v-close-popup
         @click="radio"
       >
         <q-item-section>Radio Dialog</q-item-section>
-      </q-item>
-      <q-separator />
+      </q-item> -->
       <q-item
         clickable
         v-close-popup
         @click="newNode"
       >
-        <q-item-section>Add Child</q-item-section>
+        <q-item-section>Add Node</q-item-section>
+      </q-item>
+      <q-separator />
+      <q-item
+        clickable
+        v-close-popup
+        @click="showNodeEditor"
+      >
+        <q-item-section>Edit Node</q-item-section>
       </q-item>
       <q-separator />
       <q-item
@@ -37,33 +44,38 @@ const $q = useQuasar()
 defineProps( {
   modelValue: Boolean,
 } )
-const radio = () => {
-  $q.dialog( {
-    title: 'Options',
-    message: 'Choose an option:',
-    options: {
-      type: 'radio',
-      model: 'opt1',
-      // inline: true
-      items: [
-        { label: 'Option 1', value: 'opt1', color: 'secondary' },
-        { label: 'Option 2', value: 'opt2' },
-        { label: 'Option 3', value: 'opt3' },
-      ],
-    },
-    cancel: true,
-    persistent: true,
-  } )
-    .onOk( ( data ) => {
-      console.log( '>>>> OK, received', data )
-    } )
-    .onCancel( () => {
-      console.log( '>>>> Cancel' )
-    } )
-    .onDismiss( () => {
-      console.log( 'I am triggered on both OK and Cancel' )
-    } )
+const emit = defineEmits(['ShowEdit'])
+
+const showNodeEditor = () => {
+  emit('ShowEdit', true)
 }
+// const radio = () => {
+//   $q.dialog( {
+//     title: 'Options',
+//     message: 'Choose an option:',
+//     options: {
+//       type: 'radio',
+//       model: 'opt1',
+//       // inline: true
+//       items: [
+//         { label: 'Option 1', value: 'opt1', color: 'secondary' },
+//         { label: 'Option 2', value: 'opt2' },
+//         { label: 'Option 3', value: 'opt3' },
+//       ],
+//     },
+//     cancel: true,
+//     persistent: true,
+//   } )
+//     .onOk( ( data ) => {
+//       console.log( '>>>> OK, received', data )
+//     } )
+//     .onCancel( () => {
+//       console.log( '>>>> Cancel' )
+//     } )
+//     .onDismiss( () => {
+//       console.log( 'I am triggered on both OK and Cancel' )
+//     } )
+// }
 const newNode = () => {
   $q.dialog( {
     component: AddNodeDialog,
