@@ -71,10 +71,10 @@
          v-if="showEditor"
       />
     </template>
-    <template v-slot:after  v-if="showEditor">
-      <div
-        class="col-8"
-      >
+    <template v-slot:after  v-if="isNodeSelected">
+      <div       
+       class="col-6 q-pa-md"
+         >
         <q-list dense>
           <q-expansion-item
             expand-separator

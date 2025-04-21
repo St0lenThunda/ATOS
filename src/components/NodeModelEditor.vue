@@ -1,94 +1,86 @@
 <template>
-  <div class="bg-secondary text-white q-pa-md">
-    <!-- style="max-width: 600px" -->
+  <div class="q-pa-md bg-grey-6 text-white">
     <div
       ref="form"
-      class="text-white row q-gutter-md q-pa-md"
+      class="row"
     >
-      <span class="text-h4">
-        <slot name="header">{{ headerText }} </slot>
-      </span>
+      <div class="q-gutter-md col-12 ">
+        <q-item-label class="text-h4 text-center">
+          <slot name="header">{{ headerText }}</slot>
+        </q-item-label>
+      </div>
 
-      <div>
+      <!-- Two-column layout for inputs -->
+      <q-row class="text-capitalize q-pa-xl">
         <template
           v-for=" ( model, modelKey ) in NodeModel "
           :key="modelKey"
         >
-          <template v-if=" model.type == 'String' ">
-            <template v-if=" 'label' === modelKey ">
+          <!-- String Inputs -->
+          <template v-if=" model.type === 'String' ">
+            <q-col cols="6">
               <q-input
-                class="col-6 q-pa-md"
+                v-if=" 'label' === modelKey "
                 v-model="dataRefs.label.value"
                 :name="modelKey"
                 :label="modelKey"
                 :hint="model.description"
               />
-            </template>
-            <template v-if=" 'icon' === modelKey ">
-              <div class="row col-6 q-pa-md">
-                <q-input
-                  class="col-6"
-                  :name="modelKey"
-                  v-model="dataRefs.icon.value"
-                  :label="modelKey"
-                  :hint="model.description"
-                >
-                  <template #append>
-                    <q-icon name="apps" />
+              <q-input
+                v-if=" 'icon' === modelKey "
+                v-model="dataRefs.icon.value"
+                :name="modelKey"
+                :label="modelKey"
+                :hint="model.description"
+              >
+                <template #append>
+                  <q-icon name="apps" />
+                  <q-popup-proxy
+                    cover
+                    transition-show="scale"
+                    transition-hide="scale"
+                  >
+                    <IconPicker v-model="dataRefs.icon.value" />
+                  </q-popup-proxy>
+                </template>
+              </q-input>
+              <q-input
+                v-if=" 'iconColor' === modelKey "
+                v-model="dataRefs.iconColor.value"
+                :name="modelKey"
+                :label="modelKey"
+                :hint="model.description"
+              >
+                <template #append>
+                  <q-icon
+                    name="colorize"
+                    class="cursor-pointer"
+                  >
                     <q-popup-proxy
                       cover
                       transition-show="scale"
                       transition-hide="scale"
                     >
-                      <IconPicker v-model="dataRefs.icon.value"> </IconPicker>
+                      <q-color v-model="dataRefs.iconColor.value" />
                     </q-popup-proxy>
-                  </template>
-                </q-input>
-              </div>
-            </template>
-            <template v-if=" 'iconColor' === modelKey ">
-              <div class="q-gutter-md row items-evenly">
-                <q-input
-                  :label="modelKey"
-                  :name="modelKey"
-                  :hint="model.description"
-                  v-model="dataRefs.iconColor.value"
-                >
-                  <template v-slot:append>
-                    <q-icon
-                      name="colorize"
-                      class="cursor-pointer"
-                    >
-                      <q-popup-proxy
-                        cover
-                        transition-show="scale"
-                        transition-hide="scale"
-                      >
-                        <q-color v-model="dataRefs.iconColor.value" />
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
-              </div>
-            </template>
-            <template v-if=" 'img' === modelKey ">
+                  </q-icon>
+                </template>
+              </q-input>
               <q-input
-                class="col-6 q-pa-md"
+                v-if=" 'img' === modelKey "
                 v-model="dataRefs.img.value"
                 :name="modelKey"
                 :label="modelKey"
                 :hint="model.description"
               />
-            </template>
-            <template v-if=" 'avatar' === modelKey ">
               <q-input
-                class="col-6 q-pa-md"
+                v-if=" 'avatar' === modelKey "
                 v-model="dataRefs.avatar.value"
                 :name="modelKey"
                 :label="modelKey"
                 :hint="model.description"
               >
-                <template v-slot:append>
+                <template #append>
                   <q-icon
                     name="apps"
                     class="cursor-pointer"
@@ -103,64 +95,68 @@
                   </q-icon>
                 </template>
               </q-input>
-            </template>
+            </q-col>
           </template>
-          <div class="flex-break">
-            <template v-if=" 'disabled' === modelKey ">
+
+          <!-- Boolean Toggles -->
+          <template v-if=" model.type === 'Boolean' ">
+            <q-col cols="6">
               <q-toggle
-                v-model="dataRefs.disabled.value"
-                :label="modelKey"
-                :name="modelKey"
-              ></q-toggle>
-            </template>
-            <template v-if=" 'expandable' === modelKey ">
-              <q-toggle
+                v-if=" 'expandable' === modelKey "
                 v-model="dataRefs.expandable.value"
-                :label="modelKey"
+                label="Is Folder?"
                 :name="modelKey"
-              ></q-toggle>
-            </template>
-            <template v-if=" 'selectable' === modelKey ">
+              />
               <q-toggle
+                v-if=" 'selectable' === modelKey "
                 v-model="dataRefs.selectable.value"
                 :label="modelKey"
                 :name="modelKey"
-              ></q-toggle>
-            </template>
-            <template v-if=" 'tickable' === modelKey ">
+              />
               <q-toggle
+                v-if=" 'tickable' === modelKey "
                 v-model="dataRefs.tickable.value"
                 :label="modelKey"
                 :name="modelKey"
-              ></q-toggle>
-            </template>
-            <template v-if=" 'noTick' === modelKey ">
+              />
               <q-toggle
+                v-if=" 'noTick' === modelKey "
                 v-model="dataRefs.noTick.value"
                 :label="modelKey"
                 :name="modelKey"
-              ></q-toggle>
-            </template>
-            <template v-if=" 'isFav' === modelKey ">
+              />
               <q-toggle
+                v-if=" 'isFav' === modelKey "
                 v-model="dataRefs.isFav.value"
                 :label="modelKey"
                 :name="modelKey"
-              ></q-toggle>
-            </template>
-          </div>
+              />
+              <q-toggle
+                v-if=" 'disabled' === modelKey "
+                v-model="dataRefs.disabled.value"
+                :label="modelKey"
+                :name="modelKey"
+              />
+            </q-col>
+          </template>
         </template>
+      </q-row>
+
+      <!-- Children Section -->
+      <div
+        class="col"
+        v-if=" store.nodeHasChildren "
+      >
+        <span class="text-center text-orange text-subtitle1 text-weight-bolder q-pa-md">Children</span>
+        <q-tree
+          :nodes="store.getNodeChildren"
+          node-key="label"
+          dense
+          accordion
+        />
       </div>
-  <!-- <div q-if="store.nodeHasChildren">
-        
-          <span class="text-center text-orange text-subtitle1 text-weight-bolder q-pa-md">Children</span>
-          <q-tree
-            :nodes="store.getNodeChildren"
-            node-key="label"
-            dense
-            accordion
-          />
-         </div> -->
+
+      <!-- Submit and Reset Buttons -->
       <div>
         <q-btn
           label="Submit"
@@ -170,7 +166,7 @@
         />
         <q-btn
           bordered
-          flat
+          outline
           label="Reset"
           type="reset"
           @click="resetForm"
@@ -226,7 +222,7 @@ const emit = defineEmits( ['done'] )
 const store = useThoughtStore()
 
 const setDefaults = () => {
-  
+
   if ( update ) {
     // if updating set the form to the selected node
     dataRefs = Object.assign( dataRefs, store.selectedNode );
