@@ -1,5 +1,5 @@
 <template>
-  <q-dialog ref="dialogRef" @hide="onDialogHide" class="column items-center">
+  <q-dialog ref="dialogRef" @hide="onDialogHide" >
     <q-card class="q-dialog-plugin">
       <NodeModelEditor @done="onOKClick" />
     </q-card>

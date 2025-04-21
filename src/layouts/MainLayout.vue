@@ -27,7 +27,8 @@
 
           <strong> {{ $route.fullPath }}</strong>
         </q-toolbar-title>
-
+        <q-space />
+       
       </q-toolbar>
     </q-header>
 
@@ -38,6 +39,7 @@
     >
       <q-list>
         <q-item-label header> Essential Links </q-item-label>
+
 
         <EssentialLink
           v-for=" link in linksList "

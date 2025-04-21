@@ -1,8 +1,11 @@
-<template>
+<template >
   <q-toolbar
     q-if="store.hasCrumbs"
     inset
+  
   >
+
+
     <q-breadcrumbs
       active-color="grey"
       style="font-size: 16px"
@@ -17,26 +20,31 @@
         @click="pickLeaf( crumb )"
       />
     </q-breadcrumbs>
+    <q-space />
+    <q-toggle
+      icon='dark_mode'
+      label="Dark Mode"
+      v-model="$q.dark.isActive"
+    />
   </q-toolbar>
   <q-splitter
     v-model="splitterModel"
-    style="height: 400px"
+    style="height: 85vh "
   >
     <template v-slot:before>
       <q-tree
         ref="treeRef"
         q-if="thoughts"
-        class="col-4 q-pa-md"
         :nodes="[thoughts]"
         node-key="label"
-        selected-color="primary"
         v-model:selected="selectedText"
         @update:selected="onNodeSelect"
-        accordion
+        selected-color="purple-4"
+                accordion
         dense
       >
         <template v-slot:default-header=" prop ">
-          <q-item dense>
+          <q-item class='text-primary' dense>
             <q-item-section avatar>
               <q-icon
                 color="primary"
@@ -51,50 +59,60 @@
 
             </q-item-section>
             <q-item-section
-
               top
               side
             >
-              <q-icon v-if="prop.node.isFav" name="favorite" color='red' />
+              <q-icon
+                v-if="prop.node.isFav"
+                name="favorite"
+                color='red'
+              />
             </q-item-section>
           </q-item>
-          <NodeMenu v-model="isNodeSelected" @ShowEdit="showEditor = !showEditor" />
+          <NodeMenu
+            v-model="isNodeSelected"
+            @ShowEdit="showEditor = !showEditor"
+          />
         </template>
       </q-tree>
     </template>
-    <template v-slot:separator v-if="showEditor">
+    <template
+      v-slot:separator
+      v-if="showEditor && isNodeSelected"
+    >
       <q-avatar
         color="primary"
         text-color="white"
         size="40px"
         icon="drag_indicator"
-         v-if="showEditor"
+        v-if="showEditor && isNodeSelected"
       />
     </template>
-    <template v-slot:after  v-if="isNodeSelected">
-      <div       
-       class="col-6 q-pa-md"
-         >
-        <q-list dense>
-          <q-expansion-item
+    <template
+      v-slot:after
+      v-if="isNodeSelected"
+    >
+      <div class="col-6 q-pa-md">
+       <!-- <q-list dense>
+           <q-expansion-item
             expand-separator
             :icon="selectedNode.icon || 'help'"
             :label="selectedNode.label"
             :caption="selectedNode.text"
             expand-icon="edit"
             expanded-icon="close"
-          >
+          > -->
             <q-card
               class="shadow-8"
-              bordered
+              
             >
               <q-card-section>
-                <NodeModelEditor >
+                <NodeModelEditor dark>
                   <template #header>
                     Update Node
                   </template>
                 </NodeModelEditor>
-                <NodeForm  />
+                <NodeForm />
               </q-card-section>
               <q-card-actions>
                 <q-space />
@@ -118,8 +136,6 @@
                 </div>
               </q-slide-transition>
             </q-card>
-          </q-expansion-item>
-        </q-list>
       </div>
     </template>
   </q-splitter>
@@ -141,7 +157,7 @@ import  NodeModelEditor  from "src/components/NodeModelEditor.vue";
 import NodeMenu from 'src/components/NodeMenu.vue'
 
 const store = useThoughtStore()
-const { crumbs, selectedNode, strSelectedNode, thoughts, selectedText, isNodeSelected } =
+const { crumbs, strSelectedNode, thoughts, selectedText, isNodeSelected } =
   storeToRefs( store )
 const bar = ref( null )
 const srcData = []
@@ -170,11 +186,20 @@ const onNodeSelect = (key) => {
 onMounted(() => refresh())
 </script>
 
-<style scoped>
+<style >
 pre {
   background-color: #f4f4f4;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
+  overflow-y: auto;
+}
+.q-dark pre {
+  background-color: #1b1313;
+  padding: 10px;
+  border: 1px solid #100d0d;
+  border-radius: 5px;
+  color: #f4f4f4;
+  overflow-y: auto;
 }
 </style>
