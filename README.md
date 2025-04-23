@@ -112,6 +112,7 @@ See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-
 - [ ] Add settings page for:
   - [ ] Save to local vs save to backend (file for now)
   - [ ] themes
+  - [ ] Add StoryBook for documentation and prototyping
 
 ## AI Suggestions
   
