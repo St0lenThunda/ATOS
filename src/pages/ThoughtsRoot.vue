@@ -21,11 +21,7 @@
       />
     </q-breadcrumbs>
     <q-space />
-    <q-toggle
-      icon='dark_mode'
-      label="Dark Mode"
-      v-model="$q.dark.isActive"
-    />
+    
   </q-toolbar>
   <q-splitter
     v-model="splitterModel"
@@ -42,6 +38,7 @@
         selected-color="purple-4"
                 accordion
         dense
+        class="q-mx-lg"
       >
         <template v-slot:default-header=" prop ">
           <q-item class='text-primary' dense>
@@ -93,15 +90,7 @@
       v-if="isNodeSelected"
     >
       <div class="col-6 q-pa-md">
-       <!-- <q-list dense>
-           <q-expansion-item
-            expand-separator
-            :icon="selectedNode.icon || 'help'"
-            :label="selectedNode.label"
-            :caption="selectedNode.text"
-            expand-icon="edit"
-            expanded-icon="close"
-          > -->
+      
             <q-card
               class="shadow-8"
               
@@ -131,7 +120,10 @@
                 <div v-show="expanded">
                   <q-separator />
                   <q-card-section class="text-subtitle2">
+                  <QMarkdown >
                     <pre id="json-display"> {{ strSelectedNode }}</pre>
+                  </QMarkdown>
+                    
                   </q-card-section>
                 </div>
               </q-slide-transition>
@@ -155,6 +147,8 @@ import { useThoughtStore } from 'src/stores/thoughts'
 import { storeToRefs } from 'pinia'
 import  NodeModelEditor  from "src/components/NodeModelEditor.vue";
 import NodeMenu from 'src/components/NodeMenu.vue'
+import { QMarkdown } from '@quasar/quasar-ui-qmarkdown'
+
 
 const store = useThoughtStore()
 const { crumbs, strSelectedNode, thoughts, selectedText, isNodeSelected } =
@@ -185,8 +179,11 @@ const onNodeSelect = (key) => {
 
 onMounted(() => refresh())
 </script>
+<style src="@quasar/quasar-ui-qmarkdown/dist/index.css"></style>
 
-<style >
+<!--
+  /*
+  <style >
 pre {
   background-color: #f4f4f4;
   padding: 10px;
@@ -202,4 +199,6 @@ pre {
   color: #f4f4f4;
   overflow-y: auto;
 }
+  */
 </style>
+-->

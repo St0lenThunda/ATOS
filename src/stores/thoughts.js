@@ -31,11 +31,19 @@ export const useThoughtStore = defineStore('thoughtStore', {
     crumbTrail() {
       return _.join(this.crumbs, ' > ')
     },
+    /**
+     * Determines if the given node has children.
+     *
+     * @param {Object} params - The parameters object.
+     * @param {Object} params.selectedNode - The node to check for children.
+     * @param {Array|undefined} params.selectedNode.children - The children of the node, if any.
+     * @returns {boolean} Returns `true` if the node has children, otherwise `false`.
+     */
     nodeHasChildren ( { selectedNode } ) {
       return !_.isEmpty( selectedNode?.children )
     },
     getNodeChildren({selectedNode}){
-      return selectedNode?.children
+      return selectedNode?.children && selectedNode?.children.length > 0 ? selectedNode?.children : []
     },
     getFilteredNodeKeys({ isNodeSelected, selectedNode }) {
       var keys = []
@@ -118,21 +126,23 @@ return Object.keys(selectedNode)
       }
     },
     getLabelPath(tree, targetLabel) {
-      let result = []
+      const stack = tree.map( ( node ) => ( { node, path: [node.label] } ) );
 
-      function traverse(nodes, path) {
-        return _.some(nodes, (node) => {
-          const newPath = [...path, node.label]
-          if (node.label === targetLabel) {
-            result = newPath
-            return true
+      while ( stack.length > 0 ) {
+        const { node, path } = stack.pop();
+
+        if ( node.label === targetLabel ) {
+          return path; // Return the path when the target is found
+        }
+
+        if ( node.children && node.children.length > 0 ) {
+          for ( const child of node.children ) {
+            stack.push( { node: child, path: [...path, child.label] } );
           }
-          return node.children && traverse(node.children, newPath)
-        })
+        }
       }
 
-      traverse(tree, [])
-      return result
+      return []; // Return an empty array if the target label is not found
     },
     isEmptyObject(obj) {
       return JSON.stringify(obj) === '{}'

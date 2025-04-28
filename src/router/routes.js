@@ -7,7 +7,7 @@ const routes = [
       { path: 'thoughts', name: 'thoughts', component: () => import('src/pages/ThoughtsRoot.vue') },
       { path: 'api', name: 'apiViewer', component: () => import('src/pages/ApiViewer.vue') },
       { path: 'beta2', name: 'beta2', component: () => import('src/pages/JsonTreeViewer.vue') },
-      { path: 'beta3', name: 'beta3', component: () => import('src/pages/JsonTreeViewer.vue') },
+      { path: 'glossary', name: 'glossary', component: () => import('src/pages/GlossaryPage.vue') },
     ],
   },
 

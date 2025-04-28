@@ -1,10 +1,13 @@
 <template>
-  <div class="q-pa-md " dark>
+  <div
+    class="q-pa-md "
+    dark
+  >
     <div
       ref="form"
       class="row"
     >
-     
+
       <!-- Header Section -->
       <div class="q-gutter-md col-12">
         <q-item-label class="text-h4 text-center">
@@ -28,9 +31,10 @@
                 :hint="model.description"
                 dense
                 standout="bg-secondary text-white"
+                :rules="[val => !!val || `${modelKey} is required`]"
               >
                 <template #append>
-                  <template v-if="modelKey === 'icon' || modelKey === 'avatar'">
+                  <template v-if=" modelKey === 'icon' || modelKey === 'avatar' ">
                     <q-icon
                       name="apps"
                       class="cursor-pointer"
@@ -165,21 +169,25 @@ const { update, headerText } = defineProps( {
 } )
 const emit = defineEmits( ['done'] )
 const store = useThoughtStore()
+const isLoading = ref( false );
 
 const setDefaults = () => {
-
   if ( update ) {
-    // if updating set the form to the selected node
-    dataRefs = Object.assign( dataRefs, store.selectedNode );
+    // Update mode: Set form values to the selected node
+    Object.keys( dataRefs ).forEach( ( key ) => {
+      if ( store.selectedNode[key] !== undefined ) {
+        dataRefs[key].value = store.selectedNode[key];
+      }
+    } );
   } else {
-    // we need to set the dataRefs to the NodeModel defaults
-    const treeNodeDefaults = getTreeNodeDefaults(NodeModel)
- Object.keys(dataRefs).forEach(key => {
-  dataRefs[key] = ref(treeNodeDefaults[key])
- });
+    // Add mode: Set form values to defaults from NodeModel
+    const treeNodeDefaults = getTreeNodeDefaults( NodeModel );
+    Object.keys( dataRefs ).forEach( ( key ) => {
+      dataRefs[key].value = treeNodeDefaults[key];
+    } );
   }
+};
 
-}
 /**
  * Extracts all keys from the treeNode JSON and maps them to their default values.
  * @param {Object} nodeSchema - The JSON schema for the tree node.
@@ -194,45 +202,31 @@ onMounted( () => {
   setDefaults()
 } )
 
-// const closeDialog = () => {
 
-// }
-
-const onSubmit = ( evt ) => {
-  evt.preventDefault()
+const onSubmit = async ( evt ) => {
+  evt.preventDefault();
   if ( !dataRefs.label.value ) {
     $q.notify( { type: 'negative', message: 'Label is required' } );
     return;
   }
-  store.addNode( refsToData() )
-  resetForm()
-  emit( 'done', true )
-}
-
-const refsToData = () => {
-  // consolidate the data into a non-reactive js object
-  var data = {}
-  for ( const [key, val] of Object.entries( dataRefs ) ) {
-    data[key] = val.value
+  isLoading.value = true;
+  try {
+    await store.addNode( refsToData() );
+    resetForm();
+    emit( 'done', true );
+  } catch ( error ) {
+    $q.notify( { type: 'negative', message: 'Failed to add node: ' + error.message } );
+  } finally {
+    isLoading.value = false;
   }
-  return data
-}
+};
+
+const refsToData = () => _.mapValues( dataRefs, ( ref ) => ref.value );
 
 const resetForm = () => {
-  setDefaults()
+  Object.keys( dataRefs ).forEach( ( key ) => {
+    dataRefs[key].value = '';
+  } );
 }
 </script>
 
-<style scoped>
-.flex-break {
-  flex: 1 0 100% !important;
-}
-
-.row flex-break {
-  height: 0 !important;
-}
-
-.column flex-break {
-  width: 0 !important;
-}
-</style>

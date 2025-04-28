@@ -1,4 +1,4 @@
-import APIMenu from './ApiMenu.vue';
+import ApiMenu from './ApiMenu.vue';
 export default {
   component: ApiMenu,
   
@@ -10,16 +10,16 @@ export default {
  * See https://storybook.js.org/docs/api/csf
  * to learn how to use render functions.
  */
-// export const MenuApi = {
-//   render: ( args ) => ( {
-//     components: { ApiMenu },
-//     setup () {
-//       return { args };
-//     },
-//     template: '<ApiMenu v-bind="args" />',
-//   } ),
-//   args: {
-//     show: true,
-//     readOnly: true,
-//   },
-// };
+export const MenuApi = {
+  render: ( args ) => ( {
+    components: { ApiMenu },
+    setup () {
+      return { args };
+    },
+    template: '<ApiMenu v-bind="args" />',
+  } ),
+  args: {
+    show: true,
+    readOnly: true,
+  },
+};

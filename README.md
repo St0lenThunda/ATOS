@@ -41,7 +41,7 @@
 
 - Simple file system structure for visualizing my essence to the most frivolous whims
 - Drill down based on ST Logic
-- The system works by "_Bubblen  my categories naturally to the top".
+- The system works by "*Bubblen* my categories naturally to the top".
 
 
 ## Install the dependencies
@@ -129,7 +129,7 @@ See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-
 - [ ] Ensure dialogs are accessible and provide clear instructions to the user.
 #### Breadcrumbs:
 
-- [ ] The breadcrumbs in ThoughtsRoot.vue are functional, but clicking on a breadcrumb could collapse unrelated nodes. Ensure the behavior is intuitive.
+- [x] The breadcrumbs in ThoughtsRoot.vue are functional, but clicking on a breadcrumb could collapse unrelated nodes. Ensure the behavior is intuitive.
 
 ### Performance
 #### Recursive Functions:
