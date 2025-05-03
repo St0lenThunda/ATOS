@@ -1,5 +1,5 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
-import { LocalStorage, Notify, setCssVar } from 'quasar';
+import { LocalStorage, Notify, setCssVar, Dark } from 'quasar';
 
 export const useSettings = defineStore( 'settingsStore', {
   state: () => ( {
@@ -123,32 +123,46 @@ export const useSettings = defineStore( 'settingsStore', {
 
     },
     getSavedTheme () {
-      return LocalStorage.getItem( 'selectedTheme' ) || 'synthwave'; // Default to 'synthwave'
+      const dark = LocalStorage.getItem('dark')
+      const name =  LocalStorage.getItem( 'selectedTheme' )
+      return {
+        themeName: (name) ? name : 'synthwave',
+        dark: (dark) ? dark : 'false'
+      };
     }
   },
   actions: {
-    setTheme ( themeName ) {
-      this.currentTheme = this.themes[themeName]
+    setTheme ( theme ) {
+      if (typeof theme !== 'object'){
+         theme = {
+          themeName: theme,
+          dark: Dark.isActive
+         }
+      }
+      this.currentTheme = this.themes[theme.themeName]
       if ( !this.currentTheme ) {
-        console.error( `Theme ${themeName} not found` )
+        console.error( `Theme ${theme.themeName} not found` )
         return
       }
-      // // Set the CSS variables for the selected theme
-      // const setCSSVar = ( key, value ) => {
-      //   document.documentElement.style.setProperty( `--q-${key}`, value , 'important')
-      // }
+      // Set the CSS variables for the selected theme
       Object.keys( this.currentTheme ).forEach( ( key ) => {
         setCssVar( key, this.currentTheme[key] )
       } )
+      
+      // Set dark mode
+      Dark.set(Boolean(theme.dark))
 
-      LocalStorage.set( 'selectedTheme', themeName ); // Save the theme
+
+      // save settings to storage
+      LocalStorage.set( 'selectedTheme', theme.themeName ); // Save the theme
+      LocalStorage.set('dark', Dark.isActive)
       Notify.create( {
-        message: `Theme switched to ${themeName}`,
+        message: `Theme switched to ${theme.themeName}`,
         color: 'green',
         position: 'top',
         timeout: 2000,
       } );
-      console.log( 'Theme switched to:', themeName );
+      console.log( 'Theme switched to:', theme.themeName );
     }
   },
 } )

@@ -1,7 +1,10 @@
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide" >
     <q-card class="q-dialog-plugin">
-      <NodeModelEditor @done="onOKClick" />
+      <NodeModelEditor 
+      :update="update"
+      :headerText="headerText"
+      @done="onOKClick" />
     </q-card>
   </q-dialog>
 </template>
@@ -9,6 +12,11 @@
 <script setup>
 import { useDialogPluginComponent } from 'quasar'
 import NodeModelEditor from 'src/components/NodeModelEditor.vue'
+
+const {update, headerText} = defineProps( {
+  update: Boolean,
+  headerText:String,
+} )
 defineEmits([...useDialogPluginComponent.emits])
 const { dialogRef, onDialogHide, onDialogOK } = useDialogPluginComponent()
 // dialogRef      - Vue ref to be applied to QDialog

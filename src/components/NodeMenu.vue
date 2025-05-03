@@ -12,6 +12,7 @@
         clickable
         v-close-popup
         @click="newNode"
+        v-if="store.nodeHasChildren"
       >
         <q-item-section>Add Node</q-item-section>
       </q-item>
@@ -47,7 +48,22 @@ defineProps( {
 const emit = defineEmits(['ShowEdit'])
 
 const showNodeEditor = () => {
-  emit('ShowEdit', true)
+
+  $q.dialog( {
+     title: 'Edit current node',
+      cancel: true,
+      persistent: true,
+  } )
+    .onOk( () => {
+      emit('ShowEdit', true)
+      console.log( 'OK' )
+    } )
+    .onCancel( () => {
+      console.log( 'Cancel' )
+    } )
+    .onDismiss( () => {
+      console.log( 'Called on OK or Cancel' )
+    } )
 }
 // const radio = () => {
 //   $q.dialog( {

@@ -4,7 +4,8 @@
     "esbenp.prettier-vscode",
     "editorconfig.editorconfig",
     "vue.volar",
-    "wayou.vscode-todo-highlight"
+    "wayou.vscode-todo-highlight",
+    "misterj.vue-volar-extention-pack"
   ],
   "unwantedRecommendations": [
     "octref.vetur",

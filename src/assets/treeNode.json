@@ -7,6 +7,7 @@
   "icon" :{
     "type":"String",
     "default":"",
+    "examples": ["fa fa-folder", "fa fa-folder-open", "fa fa-file"],
     "description": "Node's icon"
   },
   "iconColor": {
@@ -37,7 +38,7 @@
   "expandable":{
     "type":"Boolean",
     "default": false,
-    "description":"Expandable?"
+    "description":"Has children?"
   },
   "selectable":{
     "type":"Boolean",
@@ -51,7 +52,7 @@
   },
   "tickable":{
     "type":"Boolean",
-    "default":false,
+    "default":true,
     "description":"Tickable?"
   },
   "noTick": {
@@ -61,8 +62,17 @@
   },
   "tickStrategy":{
     "type":"String",
-    "default": "",
-    "description":"Override global tick strategy for this node only"
+    "default": "none",
+    "enum": ["none", "leaf", "leaf-filtered", "strict"],
+    "description":"Override global tick strategy for this node only",
+    "examples": [{
+      "leaf" : "Ticked nodes are only the leaves. Ticking a node influences the parent’s ticked state too (parent becomes partially ticked or ticked), as well as its children (all tickable children become ticked)."
+    },{
+      "leaf-filtered": "Same concept as leaf, only that this strategy applies only to filtered nodes (the nodes that remain visible after filtering)."
+    },{
+      "strict" : "Ticked nodes are independent of parent or children tick state."
+    }
+    ]
   },
   "lazy":{
     "type":"Boolean",

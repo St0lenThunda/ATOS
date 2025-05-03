@@ -11,27 +11,28 @@
       <!-- Header Section -->
       <div class="q-gutter-md col-12">
         <q-item-label class="text-h4 text-center">
-          <slot name="header">{{ headerText }}</slot>
+          <slot name="header">{{ headerText }}:
+          <p class=' text-h6 text-capitalize text-primary'>{{formValues['label']}}</p></slot>
         </q-item-label>
       </div>
 
       <!-- Two-column layout for non-boolean inputs -->
       <div class="row q-gutter-md q-pa-xl text-capitalize items-center">
         <template
-          v-for=" ( model, modelKey ) in NodeModel "
+          v-for=" ( model, modelKey ) in store.NodeSchema "
           :key="modelKey"
         >
           <!-- String Inputs -->
           <template v-if=" model.type === 'String' ">
-            <div class="col-12 ">
+            <div class="col-12">
               <q-input
-                v-model="dataRefs[modelKey].value"
+                v-model="formValues[modelKey]"
                 :name="modelKey"
                 :label="modelKey"
                 :hint="model.description"
                 dense
                 standout="bg-secondary text-white"
-                :rules="[val => !!val || `${modelKey} is required`]"
+                :rules="store.isKeyRequired ? [val => !!val || `${modelKey} is required`] : null"
               >
                 <template #append>
                   <template v-if=" modelKey === 'icon' || modelKey === 'avatar' ">
@@ -44,7 +45,7 @@
                         transition-show="scale"
                         transition-hide="scale"
                       >
-                        <IconPicker v-model="dataRefs[modelKey].value" />
+                        <IconPicker v-model="formValues[modelKey]" />
                       </q-popup-proxy>
                     </q-icon>
                   </template>
@@ -59,7 +60,7 @@
                         transition-show="scale"
                         transition-hide="scale"
                       >
-                        <q-color v-model="dataRefs.iconColor.value" />
+                        <q-color v-model="formValues.iconColor" />
                       </q-popup-proxy>
                     </q-icon>
 
@@ -74,14 +75,14 @@
       <!-- Three-column layout for boolean inputs -->
       <div class="row q-gutter-md q-pa-xl">
         <template
-          v-for=" ( model, modelKey ) in NodeModel "
+          v-for=" ( model, modelKey ) in store.NodeSchema "
           :key="modelKey"
         >
           <!-- Boolean Toggles -->
           <template v-if=" model.type === 'Boolean' ">
             <div class="col-12 col-md-4 text-capitalize text-h6">
               <q-toggle
-                v-model="dataRefs[modelKey].value"
+                v-model="formValues[modelKey]"
                 :label="modelKey"
                 :name="modelKey"
                 color='secondary'
@@ -131,32 +132,11 @@
 // TODO: assess the need for notification on page
 // TODO: solidify form validation
 import { useQuasar } from 'quasar'
-import _ from 'lodash'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useThoughtStore } from 'src/stores/thoughts'
-import NodeModel from 'src/assets/treeNode.json'
 import IconPicker from 'src/components/IconPicker.vue'
 const $q = useQuasar()
 const form = ref( null )
-let dataRefs = {
-  label: ref( '' ),
-  icon: ref( '' ),
-  iconColor: ref( '' ),
-  img: ref( '' ),
-  avatar: ref( '' ),
-  children: ref( [] ),
-  disabled: ref( false ),
-  expandable: ref( false ),
-  selectable: ref( true ),
-  handler: ref( null ),
-  tickable: ref( false ),
-  noTick: ref( false ),
-  tickStrategy: ref( '' ),
-  lazy: ref( false ),
-  header: ref( '' ),
-  body: ref( '' ),
-  isFav: ref( false ),
-}
 const { update, headerText } = defineProps( {
   update: {
     type: Boolean,
@@ -170,48 +150,24 @@ const { update, headerText } = defineProps( {
 const emit = defineEmits( ['done'] )
 const store = useThoughtStore()
 const isLoading = ref( false );
-
-const setDefaults = () => {
-  if ( update ) {
-    // Update mode: Set form values to the selected node
-    Object.keys( dataRefs ).forEach( ( key ) => {
-      if ( store.selectedNode[key] !== undefined ) {
-        dataRefs[key].value = store.selectedNode[key];
-      }
-    } );
-  } else {
-    // Add mode: Set form values to defaults from NodeModel
-    const treeNodeDefaults = getTreeNodeDefaults( NodeModel );
-    Object.keys( dataRefs ).forEach( ( key ) => {
-      dataRefs[key].value = treeNodeDefaults[key];
-    } );
-  }
-};
-
-/**
- * Extracts all keys from the treeNode JSON and maps them to their default values.
- * @param {Object} nodeSchema - The JSON schema for the tree node.
- * @returns {Object} - An object with keys as property names and values as their defaults.
- */
-const getTreeNodeDefaults = ( nodeSchema ) => {
-  // Use _.mapValues to iterate over the object and extract the "default" value for each key
-  return _.mapValues( nodeSchema, ( value ) => _.get( value, 'default', null ) );
-}
-
+const formValues = computed(() => {
+    if (update) return store.selectedNode
+    return store.tempNode
+})
 onMounted( () => {
-  setDefaults()
+  store.setNodeDefaults(update)
 } )
 
 
 const onSubmit = async ( evt ) => {
   evt.preventDefault();
-  if ( !dataRefs.label.value ) {
+  if ( !formValues.value?.label) {
     $q.notify( { type: 'negative', message: 'Label is required' } );
     return;
   }
   isLoading.value = true;
   try {
-    await store.addNode( refsToData() );
+    await store.addNode( store.tempNode );
     resetForm();
     emit( 'done', true );
   } catch ( error ) {
@@ -221,12 +177,9 @@ const onSubmit = async ( evt ) => {
   }
 };
 
-const refsToData = () => _.mapValues( dataRefs, ( ref ) => ref.value );
 
 const resetForm = () => {
-  Object.keys( dataRefs ).forEach( ( key ) => {
-    dataRefs[key].value = '';
-  } );
+  store.setNodeDefaults()
 }
 </script>
 
