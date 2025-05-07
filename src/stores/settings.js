@@ -162,7 +162,7 @@ export const useSettings = defineStore( 'settingsStore', {
         position: 'top',
         timeout: 2000,
       } );
-      console.log( 'Theme switched to:', theme.themeName );
+      console.debug( 'Theme switched to:', theme.themeName );
     }
   },
 } )

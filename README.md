@@ -181,7 +181,7 @@ Use TypeScript or JSDoc comments to define types for better maintainability.
 
    ```javascript
    const onChange = (content) => {
-     console.log('onChange', content);
+     console.debug('onChange', content);
      // Handle content changes here
    };
    ```

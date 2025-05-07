@@ -53,6 +53,6 @@ let jsonObject = {
   }
 }
 
-console.log( 'Before:' + JSON.stringify( jsonObject, null, 2 ) );
+console.debug( 'Before:' + JSON.stringify( jsonObject, null, 2 ) );
 addIdToNestedObject( jsonObject );
-console.log( 'After:' + JSON.stringify( jsonObject, null, 2 ) );
+console.debug( 'After:' + JSON.stringify( jsonObject, null, 2 ) );

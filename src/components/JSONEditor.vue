@@ -71,7 +71,7 @@ export default {
 
     this.editor.expand( [], throttledExpand );
 
-    console.log( 'create editor', this.editor, props );
+    console.debug( 'create editor', this.editor, props );
 
     // Debounced updateProps function for efficiency
     this.debouncedUpdateProps = _.debounce( ( updatedProps ) => {
@@ -80,12 +80,12 @@ export default {
   },
   updated () {
     const updatedProps = filterProps( this, this.prevProps );
-    console.log( 'update props', _.omit( updatedProps, ['onChange', 'onRenderMenu'] ) );
+    console.debug( 'update props', _.omit( updatedProps, ['onChange', 'onRenderMenu'] ) );
     this.prevProps = updatedProps;
     this.debouncedUpdateProps( updatedProps );
   },
   beforeUnmount () {
-    console.log( 'destroy editor' );
+    console.debug( 'destroy editor' );
     if ( this.debouncedUpdateProps ) {
       this.debouncedUpdateProps.cancel();
     }

@@ -364,7 +364,7 @@ const validateJSONPath = (path) => {
     jsonPath.parse(path);
     return true;
   } catch (e) {
-    console.log('Error validating:', e)
+    console.debug('Error validating:', e)
     return false;
   }
 };
@@ -401,13 +401,13 @@ const getCached = () => {
 //     // },
 //   } )
 //     .onOk( () => {
-//       console.log( 'OK' )
+//       console.debug( 'OK' )
 //     } )
 //     .onCancel( () => {
-//       console.log( 'Cancel' )
+//       console.debug( 'Cancel' )
 //     } )
 //     .onDismiss( () => {
-//       console.log( 'Called on OK or Cancel' )
+//       console.debug( 'Called on OK or Cancel' )
 //     } )
 // }
 // source data for json editor

@@ -43,7 +43,10 @@ import AddNodeDialog from 'src/components/AddNodeDialog.vue'
 const store = useThoughtStore()
 const $q = useQuasar()
 defineProps( {
-  modelValue: Boolean,
+  modelValue: {
+    type: Boolean,
+    default: false
+  }
 } )
 const emit = defineEmits(['ShowEdit'])
 
@@ -56,13 +59,13 @@ const showNodeEditor = () => {
   } )
     .onOk( () => {
       emit('ShowEdit', true)
-      console.log( 'OK' )
+      console.debug( 'OK' )
     } )
     .onCancel( () => {
-      console.log( 'Cancel' )
+      console.debug( 'Cancel' )
     } )
     .onDismiss( () => {
-      console.log( 'Called on OK or Cancel' )
+      console.debug( 'Called on OK or Cancel' )
     } )
 }
 // const radio = () => {
@@ -83,13 +86,13 @@ const showNodeEditor = () => {
 //     persistent: true,
 //   } )
 //     .onOk( ( data ) => {
-//       console.log( '>>>> OK, received', data )
+//       console.debug( '>>>> OK, received', data )
 //     } )
 //     .onCancel( () => {
-//       console.log( '>>>> Cancel' )
+//       console.debug( '>>>> Cancel' )
 //     } )
 //     .onDismiss( () => {
-//       console.log( 'I am triggered on both OK and Cancel' )
+//       console.debug( 'I am triggered on both OK and Cancel' )
 //     } )
 // }
 const newNode = () => {
@@ -102,13 +105,13 @@ const newNode = () => {
     },
   } )
     .onOk( () => {
-      console.log( 'OK' )
+      console.debug( 'OK' )
     } )
     .onCancel( () => {
-      console.log( 'Cancel' )
+      console.debug( 'Cancel' )
     } )
     .onDismiss( () => {
-      console.log( 'Called on OK or Cancel' )
+      console.debug( 'Called on OK or Cancel' )
     } )
 }
 
@@ -124,10 +127,10 @@ const confirmDelete = () => {
         store.removeNodeById( store.selectedNode.id )
       } )
       .onCancel( () => {
-        // console.log('>>>> Cancel')
+        // console.debug('>>>> Cancel')
       } )
       .onDismiss( () => {
-        // console.log('I am triggered on both OK and Cancel')
+        // console.debug('I am triggered on both OK and Cancel')
       } )
   } else {
     $q.dialog( {
@@ -142,13 +145,13 @@ const confirmDelete = () => {
         $q.notify( `Node ${id} >>>> Deleted` )
       } )
       .onOk( () => {
-        console.log( '>>>> second OK catcher' )
+        console.debug( '>>>> second OK catcher' )
       } )
       .onCancel( () => {
-        // console.log('>>>> Cancel')
+        // console.debug('>>>> Cancel')
       } )
       .onDismiss( () => {
-        // console.log('I am triggered on both OK and Cancel')
+        // console.debug('I am triggered on both OK and Cancel')
       } )
   }
 }

@@ -3,8 +3,7 @@
     dropdown-icon="change_history"
     label="Choose Theme"
     size="md"
-    class="q-px-lg q-py-md"
-    menu-offset="[8, 8]"
+    class="q-pa-sm q-ma-sm full-width"
     glossy
   >
     <q-list>
@@ -20,7 +19,11 @@
       </q-item>
       <q-item>
         <q-item-section top avatar>
-          <q-avatar color="primary" text-color="white" :icon="$q.dark.isActive ? 'brightness_7' : 'mode_night'" />
+          <q-avatar
+            color="primary"
+            text-color="white"
+            :icon="$q.dark.isActive ? 'brightness_7' : 'mode_night'"
+          />
         </q-item-section>
         <q-item-section>
           <q-item-label>Dark Mode</q-item-label>

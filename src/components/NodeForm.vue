@@ -42,7 +42,7 @@ const store = useThoughtStore()
 const fieldType = ( key ) => {
   const field = store.selectedNode[key]
   const ft = typeof field
-  // console.log(key, ft, field)
+  // console.debug(key, ft, field)
   return ft
 }
 </script>

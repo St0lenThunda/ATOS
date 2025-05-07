@@ -121,25 +121,42 @@ export const useThoughtStore = defineStore('thoughtStore', {
   },
   actions: {
     isKeyRequired: (key) => key in this.requiredNodeFields,
+    /**
+     * Adds a new node to the current selection or updates the selected node.
+     * 
+     * @param {Object} node - The node object to be added or used to update the selected node.
+     * 
+     * @description
+     * - If `editing` mode is active:
+     *   - Ensures the node has children if it is expandable.
+     *   - Sets the `parent_id` of the new node to the ID of the currently selected node.
+     *   - Initializes the `children` array of the selected node if it doesn't exist.
+     *   - Adds the new node to the `children` array of the selected node.
+     * - If `editing` mode is not active:
+     *   - Synchronizes the properties of the selected node with the new node.
+     * 
+     * Updates the node by its ID, saves the updated thoughts to local storage, 
+     * and displays a notification indicating successful storage.
+     */
     addNode(node) {
-      if (this.editing) {
-        // due diligence for the tempNode
-        // create children if expandable
-        if (node.expandable) node.children = []
-        node.parent_id = this.selectedNode.id
+      if ( this.editing ) {
+        node = this.selectedNode
         
         // if node is leaf create child container
-        if (!this.selectedNode.children) this.selectedNode.children = []
-        
-        console.log('adding node', node)
-        // short term storage
-        this.selectedNode.children.push(node)
+        if ( !this.selectedNode.children && this.selectedNode.expandable ) this.selectedNode.children = []
+
       } else {
-        // sync props
-        if (node.children) node.expandable = true
-        console.log('before edit selectedNode', this.selectedNode)
-        this.selectedNode = Object.assign({}, this.selectedNode, node)
-        console.log('after edit selectedNode', this.selectedNode)
+        // due diligence for the tempNode
+        // create children if expandable
+        if ( node.expandable ) node.children = []
+        node.parent_id = this.selectedNode.id
+        this.selectedNode.children.push( node )
+        let success = `adding node ${node.label} to ${this.selectedNode.label}`
+        Notify.create( {
+          type: 'positive',
+          message: success,
+        } )
+        console.info( success )
       }
       this.updateNodeById(this.selectedNode.id)
       // long term storage
@@ -193,62 +210,69 @@ export const useThoughtStore = defineStore('thoughtStore', {
       }
       return this.selectedNode.value
     },
-    async getThoughts(url) {
+    async getThoughts ( url, useCache = true ) {
       // check localstorage for data first
-      let data = LocalStorage.getItem('thoughts')
-      if (data) {
-        this.thoughts = {}
-        this.thoughts = typeof data === 'object' ? data : JSON.parse(data)
-        Notify.create('Data from cache')
-      } else {
-        // get data from api (default to first item in urls array)
-        if (!url) url = this.urls[0]
-        this.loading = true
-        this.currentUrl = url
-        try {
-          const res = await fetch(url)
-          const data = await res.json()
-          this.thoughts = data
-          Notify.create(`Data loaded from src: ${url} `)
-          // LocalStorage.setItem('thoughts', this.thoughts)
-          // Notify.create( `Data saved locally ` )
-        } catch (err) {
-          this.error = err
+      if ( useCache ) {
+        let data = LocalStorage.getItem( 'thoughts' )
+        if ( data && data !== 'undefined' ) {
+          this.thoughts = {}
+          this.thoughts = typeof data === 'object' ? data : JSON.parse( data )
+          Notify.create( 'Data from cache' )
+          return
         }
+      }
+      // get data from api (default to first item in urls array)
+      if ( !url ) url = this.urls[0]
+      this.loading = true
+      this.currentUrl = url
+      try {
+        const res = await fetch( url )
+        const data = await res.json()
+        this.thoughts = data
+        Notify.create( `Data loaded from src: ${url} ` )
+        LocalStorage.setItem( 'thoughts', this.thoughts )
+        Notify.create( `Data saved locally ` )
+      } catch ( err ) {
+        this.error = err
       }
       this.loading = false
     },
     updateNodeById ( idToUpdate, newData = this.selectedNode, tree = [this.thoughts] ) {
       const findAndUpdateNode = ( nodes ) => {
         for ( const node of nodes ) {
+          debugger
+          // Check if the current node matches the ID to update
           if ( node.id === idToUpdate ) {
-            Object.assign( node, newData ); // Update the node in place
-            return true; // Node found and updated
+            Object.assign( node, newData ) // Update the node in place
+            return true // Node found and updated
           }
           if ( node.children && node.children.length > 0 ) {
             if ( findAndUpdateNode( node.children ) ) {
-              return true; // Node found in children
+              return true // Node found in children
             }
           }
         }
-        return false; // Node not found
-      };
-
-      if ( findAndUpdateNode( tree ) ) {
+        return false // Node not found
+      }
+      let foundInTree = findAndUpdateNode( tree )
+      if ( foundInTree ) {
         // Save updates to LocalStorage
-        LocalStorage.setItem( 'thoughts', this.thoughts );
+        LocalStorage.setItem( 'thoughts', this.thoughts )
 
         // Notify the user
         Notify.create( {
           type: 'positive',
-          message: 'Node updated successfully!',
-        } );
+          message: 'Node saved to local storage successfully!',
+        } )
+        console.dir( 'Node updated:', this.selectedNode )
+        let response = this.saveToDB()
+        console.info(`Saved to DB: ${response}`)
       } else {
         // Notify the user if the node was not found
         Notify.create( {
           type: 'negative',
           message: 'Node not found!',
-        } );
+        } )
       }
     },
     removeNodeById(idToRemove) {
@@ -280,28 +304,78 @@ export const useThoughtStore = defineStore('thoughtStore', {
         type: 'positive',
         message: 'Node removed successfully',
       })
-      console.log(this.thoughts)
+      console.info(this.thoughts)
     },
     setNodeDefaults(update = false) {
-      const treeNodeDefaults = this.getTreeNodeDefaults
+      const _defaults = this.getTreeNodeDefaults
       this.editing = update
-      if (!this.editing) this.tempNode.id = this.nextID
-      console.info('editing', this.editing)
-      Object.keys(treeNodeDefaults).forEach((key) => {
-        if (this.editing) {
+
+      if ( this.editing ) {
+        Object.keys( _defaults ).forEach( ( key ) => {
           // if updating...sync selectedNode with defaults
           this.selectedNode[key] = this.selectedNode[key]
             ? this.selectedNode[key]
-            : treeNodeDefaults[key]
-        } else {
-          // Add mode (overwrite values):...sync tempNode with defaults
-          this.tempNode[key] = treeNodeDefaults[key]
-        }
-      })
+            : _defaults[key]
+        } )
+
+        this.selectedNode.expandable = this.selectedNode.children ? true : false
+      } else {
+        // if not updating...sync tempNode with defaults
+        this.tempNode = {}
+        this.tempNode.id = this.nextID
+        // Add mode (overwrite values):...sync tempNode with defaults
+        Object.keys( _defaults ).forEach( ( key ) => {
+          this.tempNode[key] = _defaults[key]
+        } )
+      }
     },
-    refresh(){
-      this.thoughts = {}
-      let thoughts = this.getThoughts()
+    async refresh () {
+      this.getThoughts()
+    },
+    async saveToDB ( apiUrl = this.currentUrl ) {
+      // Check if the API URL is provided
+      try {
+        // Notify the user that the save operation has started
+        Notify.create( {
+          type: 'info',
+          message: 'Saving data to the database...',
+        } );
+
+        // Perform the POST request to upload the "thoughts" object
+        const response = await fetch( apiUrl, {
+          method: 'POST', // HTTP method for creating new resources
+          headers: {
+            'Content-Type': 'application/json', // Specify the content type as JSON
+          },
+          body: JSON.stringify( this.thoughts ), // Convert the "thoughts" object to a JSON string
+        } );
+
+        // Check if the response status indicates success (status code 200-299)
+        if ( !response.ok ) {
+          throw new Error( `Failed to save data. Server responded with status: ${response.status}` );
+        }
+
+        // Parse the JSON response from the server
+        const result = await response.json();
+
+        // Notify the user of the successful save operation
+        Notify.create( {
+          type: 'positive',
+          message: 'Data saved to the database successfully!',
+        } );
+
+        console.info( 'Save result:', result ); // Log the server response for debugging
+        return result
+      } catch ( error ) {
+        // Handle any errors that occur during the fetch operation
+        console.error( 'Error saving data to the database:', error );
+
+        // Notify the user of the failure
+        Notify.create( {
+          type: 'negative',
+          message: `${this.currentUrl} Failed to save data: ${error.message}`,
+        } );
+      }
     }
   },
 })
